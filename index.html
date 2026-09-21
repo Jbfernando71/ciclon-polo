@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dashboard SMN | Ciclón Tropical Polo</title>
+<style>
+:root{--bg:#07131f;--panel:#102235;--panel2:#142b42;--text:#eef6ff;--muted:#a9bed2;--line:#27445f;--accent:#49a7ff;--warn:#ffbd4a;--danger:#ff6868;--ok:#67d391}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#07131f,#0a1928);color:var(--text);font-family:Segoe UI,Arial,sans-serif}
+.wrap{max-width:1450px;margin:auto;padding:22px}.top{display:flex;gap:18px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+h1{font-size:26px;margin:0}.sub{color:var(--muted);margin-top:5px}.badge{background:#153653;border:1px solid #2c618d;padding:8px 12px;border-radius:999px;font-weight:700}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin:20px 0}.card,.panel{background:rgba(16,34,53,.96);border:1px solid var(--line);border-radius:14px;padding:16px}
+.card small{color:var(--muted);text-transform:uppercase;font-weight:700}.big{font-size:24px;font-weight:800;margin-top:8px}.two{display:grid;grid-template-columns:1.15fr .85fr;gap:14px}.panel h2{font-size:16px;margin:0 0 14px;color:#d8eaff}
+.track{position:relative;height:280px;border-radius:12px;overflow:hidden;background:radial-gradient(circle at 38% 55%,#16415c 0,#0d2a3e 32%,#0b2133 70%);border:1px solid #24435e}
+.coast{position:absolute;right:-5%;top:-12%;width:43%;height:125%;background:#173e31;clip-path:polygon(65% 0,100% 0,100% 100%,30% 100%,45% 82%,30% 65%,48% 48%,37% 32%,58% 18%)}
+.path{position:absolute;left:20%;top:59%;width:48%;border-top:3px dashed #ffcc67;transform:rotate(-8deg);transform-origin:left}.storm{position:absolute;left:34%;top:50%;width:25px;height:25px;border-radius:50%;background:#ff6868;box-shadow:0 0 0 9px rgba(255,104,104,.15)}
+.maplabel{position:absolute;font-size:12px;color:#d8eaff}.zih{right:20%;top:49%}.man{right:28%;top:28%}.note{position:absolute;left:14px;bottom:12px;color:#9eb7ca;font-size:11px}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;padding:10px;border-bottom:1px solid var(--line)}th{color:#9fb7ca}.high{color:#ff8181;font-weight:800}.med{color:#ffd070;font-weight:800}
+.effects{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.effect{padding:12px;background:#0d1d2c;border-radius:10px;border:1px solid #223d55}.effect b{display:block;margin-bottom:5px}.effect span{color:var(--muted)}
+.footer{margin-top:14px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:12px}.btn{display:inline-block;background:#1c75bc;color:white;text-decoration:none;padding:10px 14px;border-radius:9px;font-weight:700}
+.alert{margin-top:14px;background:#3b2d16;border:1px solid #6d5325;color:#ffe2a3;padding:12px;border-radius:10px}
+@media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}.two{grid-template-columns:1fr}}@media(max-width:520px){.grid{grid-template-columns:1fr}.wrap{padding:12px}}
+</style>
+</head>
+<body><main class="wrap">
+<div class="top"><div><h1>Seguimiento del Ciclón Tropical Polo</h1><div class="sub">Servicio Meteorológico Nacional · CONAGUA · Pacífico mexicano</div></div><div class="badge">● SEGUIMIENTO ACTIVO</div></div>
+<section class="grid">
+<div class="card"><small>Clasificación</small><div class="big">Tormenta tropical</div></div>
+<div class="card"><small>Referencia</small><div class="big">320 km SO</div><div class="sub">de Zihuatanejo, Gro.</div></div>
+<div class="card"><small>Viento sostenido</small><div class="big">100 km/h</div></div>
+<div class="card"><small>Rachas</small><div class="big">120 km/h</div></div>
+<div class="card"><small>Movimiento</small><div class="big">Este · 7 km/h</div></div>
+</section>
+<div class="two">
+<section class="panel"><h2>Situación y trayectoria de referencia</h2>
+<div style="background:#fff;border-radius:12px;overflow:hidden;border:1px solid #24435e;text-align:center">
+<img src="https://www.noroeste.com.mx/binrepository/811x512/22c0/768d512/none/12707/RDGR/trayectoria_1-14532403_20260921074500.jpg"
+     alt="Mapa de trayectoria y evolución de la tormenta tropical Polo, elaborado por el SMN"
+     style="display:block;width:100%;height:auto;max-height:520px;object-fit:contain;background:#fff">
+</div>
+<div style="margin-top:8px;color:#9eb7ca;font-size:11px">
+Mapa de trayectoria del Servicio Meteorológico Nacional (SMN), reproducido en una publicación del 21 Sep 2026 que lo acredita como “Foto: SMN”. Requiere conexión a Internet para cargar la imagen.
+</div>
+<div class="alert"><b>Zona de vigilancia:</b> Tecpan de Galeana, Guerrero, a Punta San Telmo, Michoacán.</div>
+</section>
+<section class="panel"><h2>Efectos previstos</h2><div class="effects">
+<div class="effect"><b>Oaxaca</b><span>Lluvias de 75–150 mm · oleaje 1.5–2.5 m</span></div>
+<div class="effect"><b>Guerrero</b><span>Lluvias 50–75 mm · oleaje 2–3 m · rachas 30–50 km/h</span></div>
+<div class="effect"><b>Michoacán</b><span>Lluvias 50–75 mm · oleaje 2–3 m · rachas 30–50 km/h</span></div>
+<div class="effect"><b>Jalisco</b><span>Lluvias 25–50 mm · mar de fondo 1.5–2.5 m</span></div>
+<div class="effect"><b>Colima</b><span>Lluvias 25–50 mm · mar de fondo 1.5–2.5 m</span></div>
+<div class="effect"><b>Riesgos asociados</b><span>Encharcamientos, deslaves, inundaciones y aumento de ríos/arroyos.</span></div>
+</div></section>
+</div>
+<section class="panel" style="margin-top:14px"><h2>Semáforo de seguimiento</h2>
+<table><thead><tr><th>Entidad</th><th>Lluvia</th><th>Oleaje</th><th>Nivel de seguimiento</th><th>Condición principal</th></tr></thead>
+<tbody><tr><td>Guerrero</td><td>50–75 mm</td><td>2–3 m</td><td class="high">ALTO</td><td>Vigilancia costera</td></tr>
+<tr><td>Michoacán</td><td>50–75 mm</td><td>2–3 m</td><td class="high">ALTO</td><td>Vigilancia costera</td></tr>
+<tr><td>Oaxaca</td><td>75–150 mm</td><td>1.5–2.5 m</td><td class="high">ALTO</td><td>Lluvia intensa</td></tr>
+<tr><td>Jalisco</td><td>25–50 mm</td><td>1.5–2.5 m</td><td class="med">MEDIO</td><td>Mar de fondo</td></tr>
+<tr><td>Colima</td><td>25–50 mm</td><td>1.5–2.5 m</td><td class="med">MEDIO</td><td>Mar de fondo</td></tr></tbody></table>
+</section>
+<div class="footer"><div><b>Corte mostrado:</b> 21 Sep 2026 · Fuente exclusiva de datos: SMN/CONAGUA.<br>Este archivo es estático: para conocer cambios posteriores debe consultarse el aviso oficial.</div>
+<a class="btn" href="https://smn.conagua.gob.mx/es/" target="_blank" rel="noopener">Abrir SMN oficial ↗</a></div>
+</main></body></html>
