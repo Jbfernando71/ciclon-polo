@@ -1,9 +1,594 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="refresh" content="900"><title>Polo | SMN-CONAGUA</title>
-<style>body{margin:0;background:#07131f;color:#eef6ff;font-family:Segoe UI,Arial}main{max-width:1100px;margin:auto;padding:22px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.card,.panel{background:#102235;border:1px solid #27445f;border-radius:14px;padding:16px;margin-top:14px}small,.muted{color:#a9bed2}.big{font-size:21px;font-weight:800;margin-top:7px}img{width:100%;border-radius:10px}table{width:100%;border-collapse:collapse}td,th{padding:9px;border-bottom:1px solid #27445f;text-align:left}a{color:#7fc3ff}@media(max-width:700px){.grid{grid-template-columns:1fr 1fr}}</style></head>
-<body><main><h1>Huracán Polo · Aviso 26 · Categoría 4</h1><div class="muted">Fuente exclusiva: Servicio Meteorológico Nacional / CONAGUA</div>
-<div class="grid"><div class="card"><small>BOLETÍN</small><div class="big">23 Sep 2026 · 15:00 h</div><div class="muted">21:00 GMT</div></div><div class="card"><small>POSICIÓN</small><div class="big">15.7° N · 102.4° O</div></div><div class="card"><small>VIENTO</small><div class="big">230 km/h</div><div class="muted">Rachas 280 km/h</div></div><div class="card"><small>MOVIMIENTO</small><div class="big">NO (310°) · 11 km/h</div></div></div>
-<section class="panel"><h2>Situación actual</h2><p>Centro a 240 km al sur-suroeste de Zihuatanejo, Gro., y 420 km al sur-sureste de Manzanillo, Col. Presión mínima central: <b>932 hPa</b>.</p><p><b>Prevención:</b> Técpan de Galeana, Gro.–Punta San Telmo, Mich. <b>Vigilancia:</b> oeste de Punta San Telmo, Mich.–Playa Pérula, Jal.</p></section>
-<section class="panel"><h2>Efectos previstos</h2><table><tr><th>Lluvia</th><td>Torrenciales 150–250 mm en Michoacán (costa y este) y Guerrero (costa y oeste); intensas 75–150 mm en Colima; muy fuertes 50–75 mm en sur de Jalisco y oeste de Oaxaca.</td></tr><tr><th>Viento</th><td>Rachas 70–90 km/h en costas de Colima, Michoacán y Guerrero; 40–60 km/h en Jalisco y Oaxaca.</td></tr><tr><th>Oleaje</th><td>6–8 m en Colima, Michoacán y Guerrero; 2–3 m en Jalisco y Oaxaca.</td></tr></table></section>
-<section class="panel"><h2>Trayectoria oficial</h2><img src="https://smn.conagua.gob.mx/tools/GUI/PortalLaravel/public/WebImg/ImgTray1790198354.jpg" alt="Trayectoria oficial SMN"></section><section class="panel"><h2>Satélite oficial</h2><img src="https://smn.conagua.gob.mx/tools/GUI/PortalLaravel/public/WebImg/ImgSat1790198098.jpg" alt="Satélite oficial SMN"></section>
-<section class="panel"><h2>Pronóstico oficial</h2><table><tr><th>Fecha/hora</th><th>Categoría</th><th>Viento/racha km/h</th><th>Referencia</th></tr><tr><td>24/00</td><td>4</td><td>240/295</td><td>230 km SO de Lázaro Cárdenas, Mich.</td></tr><tr><td>24/12</td><td>4</td><td>250/305</td><td>245 km SO de Punta San Telmo, Mich.</td></tr><tr><td>25/00</td><td>4</td><td>250/305</td><td>350 km SSO de Playa Pérula, Jal.</td></tr><tr><td>25/12</td><td>4</td><td>240/295</td><td>475 km OSO de Playa Pérula, Jal.</td></tr><tr><td>26/00</td><td>4</td><td>230/280</td><td>575 km S de Cabo San Lucas, B.C.S.</td></tr><tr><td>26/12</td><td>4</td><td>220/270</td><td>490 km SSO de Cabo San Lucas, B.C.S.</td></tr><tr><td>27/12</td><td>3</td><td>195/240</td><td>365 km OSO de Cabo San Lucas, B.C.S.</td></tr><tr><td>28/12</td><td>2</td><td>165/205</td><td>125 km OSO de Cabo San Lázaro, B.C.S.</td></tr></table></section>
-<section class="panel muted">Corte: Aviso 26, 23 Sep 2026, 15:00 h (TCM). Solo datos SMN/CONAGUA. <a href="https://smn.conagua.gob.mx/tools/GUI/PortalLaravel/public/WebAviso?searchText=10822">Aviso oficial</a>.</section></main></body></html>
+<!doctype html>
+<html lang="es">
+
+<head>
+
+<meta charset="utf-8">
+
+<meta
+name="viewport"
+content="width=device-width,initial-scale=1">
+
+<meta
+http-equiv="refresh"
+content="900">
+
+<title>
+Dashboard SMN | Ciclón Tropical Polo
+</title>
+
+<style>
+
+:root{
+--bg:#07131f;
+--panel:#102235;
+--text:#eef6ff;
+--muted:#a9bed2;
+--line:#27445f;
+--accent:#49a7ff;
+--warn:#ffbd4a;
+}
+
+*{
+box-sizing:border-box
+}
+
+body{
+margin:0;
+background:linear-gradient(180deg,#07131f,#0a1928);
+color:var(--text);
+font-family:Segoe UI,Arial,sans-serif
+}
+
+.wrap{
+max-width:1450px;
+margin:auto;
+padding:22px
+}
+
+.top{
+display:flex;
+gap:18px;
+align-items:center;
+justify-content:space-between;
+flex-wrap:wrap
+}
+
+h1{
+font-size:26px;
+margin:0
+}
+
+.sub{
+color:var(--muted);
+margin-top:5px
+}
+
+.badge{
+background:#153653;
+border:1px solid #2c618d;
+padding:8px 12px;
+border-radius:999px;
+font-weight:700
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(6,1fr);
+gap:12px;
+margin:20px 0
+}
+
+.card,.panel{
+background:rgba(16,34,53,.96);
+border:1px solid var(--line);
+border-radius:14px;
+padding:16px
+}
+
+.card small{
+color:var(--muted);
+text-transform:uppercase;
+font-weight:700
+}
+
+.big{
+font-size:22px;
+font-weight:800;
+margin-top:8px
+}
+
+.two{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:14px
+}
+
+.panel h2{
+font-size:17px;
+margin:0 0 14px;
+color:#d8eaff
+}
+
+.effect{
+padding:14px;
+background:#0d1d2c;
+border-radius:10px;
+border:1px solid #223d55;
+margin-top:10px;
+line-height:1.55
+}
+
+.effect b{
+display:block;
+margin-bottom:5px
+}
+
+.effect span{
+color:var(--muted)
+}
+
+.alert{
+margin-top:14px;
+background:#3b2d16;
+border:1px solid #6d5325;
+color:#ffe2a3;
+padding:12px;
+border-radius:10px;
+line-height:1.55
+}
+
+.mapa{
+display:block;
+width:100%;
+max-height:720px;
+object-fit:contain;
+background:#fff;
+border-radius:12px;
+border:1px solid var(--line)
+}
+
+.map-note{
+margin-top:8px;
+font-size:12px;
+color:var(--muted)
+}
+
+.table-wrap{
+overflow-x:auto
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+font-size:13px
+}
+
+th,td{
+padding:11px;
+border-bottom:1px solid var(--line);
+text-align:left;
+vertical-align:top
+}
+
+th{
+color:#bcd3e7;
+background:#0d1d2c
+}
+
+td{
+color:#dce9f5
+}
+
+.footer{
+margin-top:14px;
+display:flex;
+justify-content:space-between;
+gap:12px;
+flex-wrap:wrap;
+color:var(--muted);
+font-size:12px
+}
+
+.btn{
+display:inline-block;
+background:#1c75bc;
+color:white;
+text-decoration:none;
+padding:10px 14px;
+border-radius:9px;
+font-weight:700
+}
+
+.source{
+margin-top:14px;
+padding:10px 12px;
+border-left:3px solid var(--accent);
+background:#0d1d2c;
+color:var(--muted);
+font-size:12px;
+line-height:1.5
+}
+
+@media(max-width:1000px){
+
+.grid{
+grid-template-columns:repeat(3,1fr)
+}
+
+.two{
+grid-template-columns:1fr
+}
+
+}
+
+@media(max-width:520px){
+
+.grid{
+grid-template-columns:1fr
+}
+
+.wrap{
+padding:12px
+}
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<main class="wrap">
+
+
+<div class="top">
+
+<div>
+
+<h1>
+Seguimiento del Ciclón Tropical Polo
+</h1>
+
+<div class="sub">
+Servicio Meteorológico Nacional ·
+CONAGUA · Pacífico mexicano
+</div>
+
+</div>
+
+<div class="badge">
+● SEGUIMIENTO ACTIVO ·
+AVISO 26
+</div>
+
+</div>
+
+
+<section class="grid">
+
+<div class="card">
+<small>Clasificación</small>
+<div class="big">
+Tormenta tropical
+</div>
+</div>
+
+<div class="card">
+<small>Posición</small>
+<div class="big">
+15.7° N ·
+102.4° O
+</div>
+</div>
+
+<div class="card">
+<small>Viento sostenido</small>
+<div class="big">
+230 km/h
+</div>
+</div>
+
+<div class="card">
+<small>Rachas</small>
+<div class="big">
+280 km/h
+</div>
+</div>
+
+<div class="card">
+<small>Movimiento</small>
+<div class="big">
+Hacia el noroeste (310°) a 11 km/h
+</div>
+</div>
+
+<div class="card">
+<small>Presión mínima</small>
+<div class="big">
+932 hPa
+</div>
+</div>
+
+</section>
+
+
+<div class="two">
+
+
+<section class="panel">
+
+<h2>Situación actual</h2>
+
+<div class="effect">
+<b>Referencia</b>
+<span>
+A 240 km al sur-suroeste de Zihuatanejo, Gro., y a 420 km al sur-sureste de Manzanillo, Col.
+</span>
+</div>
+
+<div class="effect">
+<b>Coordenadas</b>
+<span>
+15.7° N ·
+102.4° O
+</span>
+</div>
+
+<div class="alert">
+<b>Zona de prevención / vigilancia</b>
+<br>
+Se mantiene zona de prevención por efectos de vientos de tormenta tropical desde Técpan de Galeana, Gro., hasta Punta San Telmo, Mich., y zona de vigilancia por efectos de vientos de tormenta tropical desde el oeste de Punta San Telmo, Mich., hasta Playa Pérula, Jal.
+</div>
+
+</section>
+
+
+<section class="panel">
+
+<h2>
+Efectos confirmados por SMN/CONAGUA
+</h2>
+
+<div class="effect">
+<b>Lluvias</b>
+<span>
+Su amplia circulación refuerza la probabilidad de lluvias puntuales torrenciales (150 a 250 mm) en Michoacán (costa y este) y Guerrero (costa y oeste); lluvias puntuales intensas (75 a 150 mm) en Colima; así como lluvias muy fuertes (50 a 75 mm) en Jalisco (sur) y Oaxaca (oeste).
+</span>
+</div>
+
+<div class="effect">
+<b>Viento en costas</b>
+<span>
+Se prevén rachas de viento de 70 a 90 km/h
+</span>
+</div>
+
+<div class="effect">
+<b>Oleaje</b>
+<span>
+oleaje de 6.0 a 8.0 metros de altura en costas de Colima, Michoacán y Guerrero; viento de 20 a 30 km/h con rachas de 40 a 60 km/h en Jalisco y Oaxaca; así como oleaje de 2.0 a 3.0 metros de altura en costas de Jalisco y Oaxaca. Condiciones que disminuirán gradualmente en Oaxaca.
+</span>
+</div>
+
+</section>
+
+</div>
+
+
+<section
+class="panel"
+style="margin-top:14px">
+
+<h2>
+Trayectoria pronóstico — SMN/CONAGUA
+</h2>
+
+
+        <a
+        href="https://smn.conagua.gob.mx/tools/GUI/PortalLaravel/public/WebImg/ImgTray1790198354.jpg"
+        target="_blank"
+        rel="noopener">
+
+        <img
+        class="mapa"
+        src="https://smn.conagua.gob.mx/tools/GUI/PortalLaravel/public/WebImg/ImgTray1790198354.jpg"
+        alt="Trayectoria pronóstico de Polo publicada por SMN/CONAGUA">
+
+        </a>
+
+        <div class="map-note">
+        Trayectoria pronóstico publicada por
+        el Servicio Meteorológico Nacional /
+        CONAGUA.
+        </div>
+        
+
+</section>
+
+
+<section
+class="panel"
+style="margin-top:14px">
+
+<h2>
+Pronóstico oficial de trayectoria
+</h2>
+
+
+    <div class="table-wrap">
+    <table>
+    <thead>
+    <tr>
+    <th>Día/Hora</th>
+    <th>Latitud</th>
+    <th>Longitud</th>
+    <th>Viento/Rachas</th>
+    <th>Categoría</th>
+    <th>Ubicación</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+        <tr>
+        <td>24/00h</td>
+        <td>16.2° N</td>
+        <td>103.4° O</td>
+        <td>240/295 km/h</td>
+        <td>Huracán categoría 4</td>
+        <td>230 km al suroeste de Lázaro Cárdenas, Mich.</td>
+        </tr>
+        
+        <tr>
+        <td>24/12h</td>
+        <td>16.7° N</td>
+        <td>105.0° O</td>
+        <td>250/305 km/h</td>
+        <td>Huracán categoría 4</td>
+        <td>245 km al suroeste de Punta San Telmo, Mich.</td>
+        </tr>
+        
+        <tr>
+        <td>25/00h</td>
+        <td>16.9° N</td>
+        <td>106.9° O</td>
+        <td>250/305 km/h</td>
+        <td>Huracán categoría 4</td>
+        <td>350 km al sur-suroeste de Playa Pérula, Jal.</td>
+        </tr>
+        
+        <tr>
+        <td>25/12h</td>
+        <td>17.2° N</td>
+        <td>108.9° O</td>
+        <td>240/295 km/h</td>
+        <td>Huracán categoría 4</td>
+        <td>475 km al oeste-suroeste de Playa Pérula, Jal.</td>
+        </tr>
+        
+        <tr>
+        <td>26/00h</td>
+        <td>17.7° N</td>
+        <td>110.6° O</td>
+        <td>230/280 km/h</td>
+        <td>Huracán categoría 4</td>
+        <td>575 km al sur de Cabo San Lucas, B.C.S.</td>
+        </tr>
+        
+        <tr>
+        <td>26/12h</td>
+        <td>18.9° N</td>
+        <td>112.0° O</td>
+        <td>220/270 km/h</td>
+        <td>Huracán categoría 4</td>
+        <td>490 km al sur-suroeste de Cabo San Lucas, B.C.S.</td>
+        </tr>
+        
+        <tr>
+        <td>27/12h</td>
+        <td>22.2° N</td>
+        <td>113.4° O</td>
+        <td>195/240 km/h</td>
+        <td>Huracán categoría 3</td>
+        <td>365 km al oeste-suroeste de Cabo San Lucas, B.C.S.</td>
+        </tr>
+        
+        <tr>
+        <td>28/12h</td>
+        <td>24.3° N</td>
+        <td>113.4° O</td>
+        <td>165/205 km/h</td>
+        <td>Huracán categoría 2</td>
+        <td>125 km al oeste-suroeste de Cabo San Lázaro, B.C.S.</td>
+        </tr>
+        
+    </tbody>
+    </table>
+    </div>
+    
+
+</section>
+
+
+<section
+class="panel"
+style="margin-top:14px">
+
+<h2>
+Datos del aviso oficial
+</h2>
+
+<div class="effect">
+<b>Aviso SMN/CONAGUA</b>
+<span>
+No. 26
+</span>
+</div>
+
+<div class="effect">
+<b>Fecha y hora</b>
+<span>
+2026-09-23 ·
+15:00 horas
+(21:00 horas GMT)
+</span>
+</div>
+
+<div class="source">
+
+Fuente exclusiva:
+Servicio Meteorológico Nacional /
+Comisión Nacional del Agua.
+
+<br>
+
+Los datos que no pueden confirmarse
+inequívocamente se muestran como
+<strong>No confirmado</strong>.
+
+<br>
+
+No se utilizan datos del NHC
+ni de fuentes secundarias.
+
+</div>
+
+</section>
+
+
+<div class="footer">
+
+<div>
+
+<b>Corte mostrado:</b>
+2026-09-23 ·
+15:00 horas.
+
+<br>
+
+Actualización automática
+mediante GitHub Actions.
+
+</div>
+
+<a
+class="btn"
+href="https://smn.conagua.gob.mx/tools/GUI/PortalLaravel/public/WebAviso?searchText=10822"
+target="_blank"
+rel="noopener">
+
+Abrir aviso oficial SMN ↗
+
+</a>
+
+</div>
+
+
+</main>
+
+</body>
+
+</html>
