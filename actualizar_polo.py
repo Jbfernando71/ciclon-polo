@@ -157,90 +157,216 @@ def aislar_polo(texto):
 
 def extraer_registro_actual(texto):
 
-    patron = re.compile(
-        r"""
-        (?P<aviso>\d{1,3})
-        \s+
-        (?P<fecha>20\d{2}-\d{2}-\d{2})
-        \s+
-        (?P<hora>\d{2}:\d{2})
-        \s+horas
-        \s*
-        \(
-        (?P<gmt>\d{2}:\d{2})
-        \s+horas\s+GMT
-        (?:[^)]*)?
-        \)
-        \s+
-        (?P<lat>\d{1,2}(?:\.\d+)?)
-        \s+
-        (?P<lon>\d{2,3}(?:\.\d+)?)
-        \s+
-        (?P<referencia>A\s+.*?)
-        \s+
-        (?P<viento>\d{2,3})
-        /
-        (?P<racha>\d{2,3})
-        """,
-        re.IGNORECASE | re.VERBOSE
+    """
+    Extrae las CONDICIONES ACTUALES del aviso activo de Polo.
+
+    IMPORTANTE:
+    - El número de aviso se toma del encabezado oficial:
+      "Océano Pacífico - No. Aviso: N".
+    - Hora, posición, referencia, movimiento, viento y presión
+      se toman únicamente del bloque "Condiciones Actuales".
+    - NO se usa la tabla de Pronóstico ni el Historial de Seguimiento
+      para determinar el estado actual.
+    """
+
+    # --------------------------------------------------------
+    # 1. NÚMERO DE AVISO: encabezado oficial del Pacífico
+    # --------------------------------------------------------
+    m_aviso = re.search(
+        r"Oc[eé]ano\s+Pac[ií]fico\s*-\s*No\.\s*Aviso:\s*(\d{1,3})",
+        texto,
+        re.IGNORECASE
     )
 
-    registros = []
-
-    for m in patron.finditer(texto):
-
-        registro = {
-            "aviso": int(m.group("aviso")),
-            "fecha": m.group("fecha"),
-            "hora": m.group("hora"),
-            "gmt": m.group("gmt"),
-            "lat": m.group("lat"),
-            "lon": m.group("lon"),
-            "referencia": limpiar(
-                m.group("referencia")
-            ),
-            "viento": int(m.group("viento")),
-            "racha": int(m.group("racha")),
-        }
-
-        lat = float(registro["lat"])
-        lon = float(registro["lon"])
-
-        if not 0 <= registro["aviso"] <= 200:
-            continue
-
-        if not 0 <= lat <= 35:
-            continue
-
-        if not 80 <= lon <= 130:
-            continue
-
-        if not 20 <= registro["viento"] <= 400:
-            continue
-
-        if not 20 <= registro["racha"] <= 450:
-            continue
-
-        registros.append(registro)
-
-    if not registros:
+    if not m_aviso:
         raise RuntimeError(
-            "No pude validar el último aviso de Polo."
+            "No pude confirmar el número de aviso activo de Polo "
+            "en el encabezado oficial del SMN."
         )
 
-    def clave(r):
-        return (
-            datetime.strptime(
-                f"{r['fecha']} {r['hora']}",
-                "%Y-%m-%d %H:%M"
-            ),
-            r["aviso"]
-        )
+    aviso = int(m_aviso.group(1))
 
-    return max(
-        registros,
-        key=clave
+    # --------------------------------------------------------
+    # 2. AISLAR ESTRICTAMENTE "CONDICIONES ACTUALES"
+    #    Termina antes de "Pronóstico" (tabla futura).
+    # --------------------------------------------------------
+    m_bloque = re.search(
+        r"Condiciones\s+Actuales\s+(.+?)"
+        r"(?=\s+Pron[oó]stico\s+D[ií]a/Hora\b)",
+        texto,
+        re.IGNORECASE | re.DOTALL
     )
+
+    if not m_bloque:
+        # Variante defensiva: cortar antes del encabezado
+        # de la tabla de pronóstico.
+        m_bloque = re.search(
+            r"Condiciones\s+Actuales\s+(.+?)"
+            r"(?=\s+D[ií]a/Hora\s+Latitud\b)",
+            texto,
+            re.IGNORECASE | re.DOTALL
+        )
+
+    if not m_bloque:
+        raise RuntimeError(
+            "No pude aislar inequívocamente el bloque "
+            "'Condiciones Actuales'. index.html no será modificado."
+        )
+
+    bloque = limpiar(m_bloque.group(1))
+
+    # --------------------------------------------------------
+    # 3. HORA LOCAL / GMT
+    # --------------------------------------------------------
+    m_hora = re.search(
+        r"Hora\s+local\s*\(hora\s+GMT\)\s*"
+        r"(\d{1,2}:\d{2})\s+horas\s*"
+        r"\((\d{1,2}:\d{2})\s+horas\s+GMT",
+        bloque,
+        re.IGNORECASE
+    )
+
+    if not m_hora:
+        raise RuntimeError(
+            "No pude confirmar la hora local/GMT en "
+            "'Condiciones Actuales'."
+        )
+
+    hora = m_hora.group(1).zfill(5)
+    gmt = m_hora.group(2).zfill(5)
+
+    # --------------------------------------------------------
+    # 4. POSICIÓN
+    # --------------------------------------------------------
+    m_pos = re.search(
+        r"Latitud\s+Norte:\s*(\d{1,2}(?:\.\d+)?)\s+"
+        r"Longitud\s+Oeste:\s*(\d{2,3}(?:\.\d+)?)",
+        bloque,
+        re.IGNORECASE
+    )
+
+    if not m_pos:
+        raise RuntimeError(
+            "No pude confirmar latitud/longitud en "
+            "'Condiciones Actuales'."
+        )
+
+    lat = m_pos.group(1)
+    lon = m_pos.group(2)
+
+    # --------------------------------------------------------
+    # 5. REFERENCIA
+    # --------------------------------------------------------
+    referencia = buscar(
+        r"Distancia\s+al\s+lugar\s+m[aá]s\s+cercano\s+"
+        r"(.+?)"
+        r"(?=\s+Desplazamiento\s+actual)",
+        bloque,
+        re.IGNORECASE | re.DOTALL
+    )
+
+    if not referencia:
+        raise RuntimeError(
+            "No pude confirmar la referencia geográfica "
+            "en 'Condiciones Actuales'."
+        )
+
+    # --------------------------------------------------------
+    # 6. MOVIMIENTO
+    # --------------------------------------------------------
+    movimiento = buscar(
+        r"Desplazamiento\s+actual\s+"
+        r"(.+?)"
+        r"(?=\s+Vientos\s+m[aá]ximos)",
+        bloque,
+        re.IGNORECASE | re.DOTALL
+    )
+
+    if not movimiento:
+        raise RuntimeError(
+            "No pude confirmar el desplazamiento actual."
+        )
+
+    # --------------------------------------------------------
+    # 7. VIENTOS ACTUALES
+    # --------------------------------------------------------
+    m_viento = re.search(
+        r"Vientos\s+m[aá]ximos\s*"
+        r"(?:\[\s*km/h\s*\])?\s*"
+        r"Sostenidos:\s*(\d{2,3})\s+"
+        r"Rachas:\s*(\d{2,3})",
+        bloque,
+        re.IGNORECASE
+    )
+
+    if not m_viento:
+        raise RuntimeError(
+            "No pude confirmar viento sostenido y rachas "
+            "en 'Condiciones Actuales'."
+        )
+
+    viento = int(m_viento.group(1))
+    racha = int(m_viento.group(2))
+
+    # --------------------------------------------------------
+    # 8. PRESIÓN ACTUAL
+    # --------------------------------------------------------
+    presion = buscar(
+        r"Presi[oó]n\s+m[ií]nima\s+central\s*"
+        r"(?:\[\s*hpa\s*\])?\s*"
+        r"[:\-]?\s*(\d{3,4})",
+        bloque,
+        re.IGNORECASE
+    )
+
+    # --------------------------------------------------------
+    # 9. FECHA
+    #
+    # El bloque actual del portal no muestra la fecha junto
+    # a la hora. La confirmamos usando EXCLUSIVAMENTE la fila
+    # del Historial cuyo No. de Aviso coincide con el encabezado
+    # y cuyos lat/lon/vientos coinciden con Condiciones Actuales.
+    # Esto evita confundir pronósticos futuros con datos actuales.
+    # --------------------------------------------------------
+    historial_patron = re.compile(
+        rf"\b{aviso}\s+"
+        r"(?P<fecha>20\d{{2}}-\d{{2}}-\d{{2}})\s+"
+        rf"{re.escape(hora)}\s+horas\s*"
+        r"\([^)]*GMT[^)]*\)\s+"
+        rf"{re.escape(lat)}\s+"
+        rf"{re.escape(lon)}\s+"
+        r"(?P<referencia>A\s+.*?)\s+"
+        rf"{viento}/{racha}\b",
+        re.IGNORECASE | re.DOTALL
+    )
+
+    m_hist = historial_patron.search(texto)
+
+    if not m_hist:
+        raise RuntimeError(
+            "El aviso activo y las Condiciones Actuales no pudieron "
+            "validarse contra la fila correspondiente del Historial "
+            "de Seguimiento. Por seguridad no se actualizará index.html."
+        )
+
+    fecha = m_hist.group("fecha")
+
+    datos = {
+        "aviso": aviso,
+        "fecha": fecha,
+        "hora": hora,
+        "gmt": gmt,
+        "lat": lat,
+        "lon": lon,
+        "referencia": referencia,
+        "viento": viento,
+        "racha": racha,
+        "movimiento": movimiento,
+        "presion": f"{presion} hPa" if presion else "No confirmado",
+        "_bloque_actual": bloque,
+    }
+
+    return datos
 
 
 # ============================================================
@@ -249,42 +375,26 @@ def extraer_registro_actual(texto):
 
 def obtener_bloque_actual(texto, datos):
 
-    lat = re.escape(datos["lat"])
-    lon = re.escape(datos["lon"])
+    bloque = datos.get("_bloque_actual")
 
-    candidatos = list(
-        re.finditer(
-            r"Condiciones\s+Actuales",
-            texto,
-            re.IGNORECASE
+    if bloque:
+        return bloque
+
+    # Fallback defensivo si se llama sin el bloque preaislado.
+    m = re.search(
+        r"Condiciones\s+Actuales\s+(.+?)"
+        r"(?=\s+Pron[oó]stico\s+D[ií]a/Hora\b)",
+        texto,
+        re.IGNORECASE | re.DOTALL
+    )
+
+    if not m:
+        raise RuntimeError(
+            "No pude identificar inequívocamente el bloque "
+            "actual de Polo."
         )
-    )
 
-    for candidato in reversed(candidatos):
-
-        fragmento = texto[
-            candidato.start():
-            candidato.start() + 9000
-        ]
-
-        if (
-            re.search(
-                rf"Latitud\s+Norte:\s*{lat}",
-                fragmento,
-                re.IGNORECASE
-            )
-            and
-            re.search(
-                rf"Longitud\s+Oeste:\s*{lon}",
-                fragmento,
-                re.IGNORECASE
-            )
-        ):
-            return fragmento
-
-    raise RuntimeError(
-        "No pude identificar el bloque actual de Polo."
-    )
+    return limpiar(m.group(1))
 
 
 # ============================================================
@@ -685,23 +795,27 @@ def extraer_pronostico(soup):
 
 def extraer_datos(texto):
 
-    datos = extraer_registro_actual(
-        texto
+    datos = extraer_registro_actual(texto)
+
+    datos["clasificacion"] = extraer_clasificacion(
+        texto,
+        datos
     )
 
-    datos["clasificacion"] = (
-        extraer_clasificacion(
-            texto,
-            datos
-        )
+    adicionales = extraer_datos_actuales(
+        texto,
+        datos
     )
 
-    datos.update(
-        extraer_datos_actuales(
-            texto,
-            datos
-        )
-    )
+    # Movimiento y presión ya fueron obtenidos estrictamente
+    # desde Condiciones Actuales. Los demás campos se agregan aquí.
+    adicionales["movimiento"] = datos["movimiento"]
+    adicionales["presion"] = datos["presion"]
+
+    datos.update(adicionales)
+
+    # Campo interno: no debe formar parte de la salida pública/log.
+    datos.pop("_bloque_actual", None)
 
     return datos
 
@@ -1494,7 +1608,7 @@ def main():
 
     print()
     print("========================================")
-    print(" ACTUALIZADOR CICLÓN POLO V4")
+    print(" ACTUALIZADOR CICLÓN POLO V4.1")
     print(" Fuente exclusiva: SMN / CONAGUA")
     print(" Mapa + tabla de trayectoria automática")
     print("========================================")
