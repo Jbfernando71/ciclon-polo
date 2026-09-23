@@ -340,12 +340,14 @@ def extraer_registro_actual(texto):
     # --------------------------------------------------------
     # 9. FECHA
     #
-    # El bloque actual del portal no muestra la fecha junto
-    # a la hora. La confirmamos usando EXCLUSIVAMENTE la fila
-    # del Historial cuyo No. de Aviso coincide con el encabezado
-    # y cuyos lat/lon/vientos coinciden con Condiciones Actuales.
-    # Esto evita confundir pronósticos futuros con datos actuales.
+    # La fuente primaria del estado actual es el bloque
+    # "Condiciones Actuales" de la respuesta específica de Polo.
+    # El Historial se usa SOLO como apoyo para obtener la fecha;
+    # una discrepancia del historial ya no invalida los datos actuales.
     # --------------------------------------------------------
+    fecha = None
+
+    # Intento 1: fila del historial con mismo aviso/hora/posición/vientos.
     historial_patron = re.compile(
         rf"\b{aviso}\s+"
         r"(?P<fecha>20\d{{2}}-\d{{2}}-\d{{2}})\s+"
@@ -357,17 +359,31 @@ def extraer_registro_actual(texto):
         rf"{viento}/{racha}\b",
         re.IGNORECASE | re.DOTALL
     )
-
     m_hist = historial_patron.search(texto)
-
-    if not m_hist:
-        raise RuntimeError(
-            "El aviso activo y las Condiciones Actuales no pudieron "
-            "validarse contra la fila correspondiente del Historial "
-            "de Seguimiento. Por seguridad no se actualizará index.html."
+    if m_hist:
+        fecha = m_hist.group("fecha")
+        print("Fecha confirmada mediante Historial de Seguimiento:", fecha)
+    else:
+        print(
+            "ADVERTENCIA: el Historial no coincide exactamente con las "
+            "Condiciones Actuales; no se usará para invalidarlas."
         )
 
-    fecha = m_hist.group("fecha")
+    # Intento 2: buscar una fecha asociada al mismo número de aviso.
+    if not fecha:
+        m_fecha_aviso = re.search(
+            rf"\b{aviso}\s+(20\d{{2}}-\d{{2}}-\d{{2}})\b",
+            texto,
+            re.IGNORECASE
+        )
+        if m_fecha_aviso:
+            fecha = m_fecha_aviso.group(1)
+            print("Fecha obtenida de una referencia al Aviso", aviso, ":", fecha)
+
+    # Si el portal no permite confirmar la fecha, NO la inventamos.
+    if not fecha:
+        fecha = "No confirmado"
+        print("Fecha del aviso: No confirmado")
 
     datos = {
         "aviso": aviso,
@@ -1626,7 +1642,7 @@ def main():
 
     print()
     print("========================================")
-    print(" ACTUALIZADOR CICLÓN POLO V4.2.2")
+    print(" ACTUALIZADOR CICLÓN POLO V4.3")
     print(" Fuente exclusiva: SMN / CONAGUA")
     print(f" URL específica de Polo: {URL}")
     print(" Mapa + tabla de trayectoria automática")
