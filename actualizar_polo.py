@@ -12,7 +12,9 @@ from urllib.parse import urljoin, urlparse
 # CONFIGURACIÓN
 # ============================================================
 
-URL = "https://smn.conagua.gob.mx/tools/GUI/PortalLaravel/public/WebAviso"
+URL_BASE = "https://smn.conagua.gob.mx/tools/GUI/PortalLaravel/public/WebAviso"
+POLO_ID = "10822"
+URL = f"{URL_BASE}?searchText={POLO_ID}"
 DOMINIO_SMM = "smn.conagua.gob.mx"
 INDEX = Path("index.html")
 
@@ -111,8 +113,12 @@ def obtener_smn():
         re.IGNORECASE
     ):
         raise RuntimeError(
-            "No pude confirmar la presencia de Polo."
+            f"La respuesta de searchText={POLO_ID} no pudo validarse como Polo. "
+            "Por seguridad index.html no será modificado."
         )
+
+    print("Ciclón validado: Polo")
+    print("Identificador SMN seleccionado:", POLO_ID)
 
     return texto, soup_datos
 
@@ -172,19 +178,31 @@ def extraer_registro_actual(texto):
     # --------------------------------------------------------
     # 1. NÚMERO DE AVISO: encabezado oficial del Pacífico
     # --------------------------------------------------------
+    # Preferimos una referencia explícita Polo + número de aviso.
     m_aviso = re.search(
-        r"Oc[eé]ano\s+Pac[ií]fico\s*-\s*No\.\s*Aviso:\s*(\d{1,3})",
+        r"(?:Hurac[aá]n|Tormenta\s+tropical|Depresi[oó]n\s+tropical)?"
+        r"\s*Polo\s+(\d{1,3})\b",
         texto,
         re.IGNORECASE
     )
 
+    # Fallback: en la respuesta específica searchText=10822, el encabezado
+    # oficial puede contener "Océano Pacífico - No. Aviso: N".
+    if not m_aviso:
+        m_aviso = re.search(
+            r"Oc[eé]ano\s+Pac[ií]fico\s*-\s*No\.\s*Aviso:\s*(\d{1,3})",
+            texto,
+            re.IGNORECASE
+        )
+
     if not m_aviso:
         raise RuntimeError(
-            "No pude confirmar el número de aviso activo de Polo "
-            "en el encabezado oficial del SMN."
+            "No pude confirmar el número de aviso de Polo en la respuesta "
+            f"específica searchText={POLO_ID}."
         )
 
     aviso = int(m_aviso.group(1))
+    print("Aviso de Polo identificado:", aviso)
 
     # --------------------------------------------------------
     # 2. AISLAR ESTRICTAMENTE "CONDICIONES ACTUALES"
@@ -699,7 +717,7 @@ def extraer_mapa_trayectoria(soup):
         return None
 
     print(
-        "Mapa oficial:",
+        "Mapa oficial de Polo:",
         url_imagen
     )
 
@@ -1608,8 +1626,9 @@ def main():
 
     print()
     print("========================================")
-    print(" ACTUALIZADOR CICLÓN POLO V4.1")
+    print(" ACTUALIZADOR CICLÓN POLO V4.2.2")
     print(" Fuente exclusiva: SMN / CONAGUA")
+    print(f" URL específica de Polo: {URL}")
     print(" Mapa + tabla de trayectoria automática")
     print("========================================")
 
