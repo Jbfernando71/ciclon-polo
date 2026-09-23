@@ -1,16 +1,33 @@
 <!doctype html>
 <html lang="es">
+
 <head>
+
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta http-equiv="refresh" content="900">
+
+<meta
+name="viewport"
+content="width=device-width,initial-scale=1">
+
+<meta
+http-equiv="refresh"
+content="900">
+
 <title>Dashboard SMN | Ciclón Tropical Polo</title>
 
 <style>
-:root{--bg:#07131f;--panel:#102235;--panel2:#142b42;
---text:#eef6ff;--muted:#a9bed2;--line:#27445f;
---accent:#49a7ff;--warn:#ffbd4a;--danger:#ff6868;
---ok:#67d391}
+
+:root{
+--bg:#07131f;
+--panel:#102235;
+--text:#eef6ff;
+--muted:#a9bed2;
+--line:#27445f;
+--accent:#49a7ff;
+--warn:#ffbd4a;
+--danger:#ff6868;
+--ok:#67d391
+}
 
 *{box-sizing:border-box}
 
@@ -35,7 +52,10 @@ justify-content:space-between;
 flex-wrap:wrap
 }
 
-h1{font-size:26px;margin:0}
+h1{
+font-size:26px;
+margin:0
+}
 
 .sub{
 color:var(--muted);
@@ -129,11 +149,21 @@ font-size:12px
 .btn{
 display:inline-block;
 background:#1c75bc;
-color:white;
+color:#fff;
 text-decoration:none;
 padding:10px 14px;
 border-radius:9px;
 font-weight:700
+}
+
+.source{
+margin-top:14px;
+padding:10px 12px;
+border-left:3px solid var(--accent);
+background:#0d1d2c;
+color:var(--muted);
+font-size:12px;
+line-height:1.5
 }
 
 @media(max-width:1000px){
@@ -145,7 +175,9 @@ font-weight:700
 .grid{grid-template-columns:1fr}
 .wrap{padding:12px}
 }
+
 </style>
+
 </head>
 
 <body>
@@ -156,6 +188,7 @@ font-weight:700
 
 <div>
 <h1>Seguimiento del Ciclón Tropical Polo</h1>
+
 <div class="sub">
 Servicio Meteorológico Nacional · CONAGUA · Pacífico mexicano
 </div>
@@ -177,9 +210,7 @@ Servicio Meteorológico Nacional · CONAGUA · Pacífico mexicano
 
 <div class="card">
 <small>Posición</small>
-<div class="big">
-15.6° N · 102.1° O
-</div>
+<div class="big">15.6° N · 102.1° O</div>
 </div>
 
 <div class="card">
@@ -194,12 +225,12 @@ Servicio Meteorológico Nacional · CONAGUA · Pacífico mexicano
 
 <div class="card">
 <small>Movimiento</small>
-<div class="big">miento actual Hacia el noroeste (315°) a 7 km/h</div>
+<div class="big">Hacia el noroeste (315°) a 7 km/h</div>
 </div>
 
 <div class="card">
 <small>Presión mínima</small>
-<div class="big">No confirmado</div>
+<div class="big">931 hPa</div>
 </div>
 
 </section>
@@ -218,15 +249,12 @@ Servicio Meteorológico Nacional · CONAGUA · Pacífico mexicano
 
 <div class="effect">
 <b>Coordenadas</b>
-<span>
-15.6° N ·
-102.1° O
-</span>
+<span>15.6° N · 102.1° O</span>
 </div>
 
 <div class="alert">
 <b>Zona de prevención / vigilancia</b><br>
-Zona de vigilancia Se mantiene zona de prevención por efectos de
+Se mantiene zona de prevención por efectos de vientos de tormenta tropical desde Técpan de Galeana, Gro., hasta Punta San Telmo, Mich., y zona de vigilancia por efectos de vientos de tormenta tropical desde el oeste de Punta San Telmo, Mich., hasta Playa Pérula, Jal. Comentarios adicionales Se prevén rachas de viento de 70 a 90 km/h y oleaje de 6.0 a 8.0 metros de altura en costas de Colima, Michoacán y Guerrero; así como oleaje de 2.0 a 3.0 metros de altura en costas de Jalisco y Oaxaca, disminuyendo durante el día.
 </div>
 
 </section>
@@ -238,19 +266,23 @@ Zona de vigilancia Se mantiene zona de prevención por efectos de
 
 <div class="effect">
 <b>Lluvias</b>
-<span>lluvias de muy fuertes a puntuales torrenciales en estados del occidente y sur del país; ademas de vientos fuertes y oleaje elevado en sus costas. Condiciones Actuales Hora local (hora GMT) 12:00 horas (18:00 horas GMT) Ubicación del centro Latitud Norte: 15.6 Longitud Oeste: 102.1 Distancia al lugar más cercano A 240 km al sur-suroeste de Zihuatanejo, Gro., y a 445 km al sur-sureste de Manzanillo, Col. Desplazamiento actual Hacia el noroeste (315°) a 7 km/h Vientos máximos [km/h] Sostenidos: 230 Rachas: 280 Presión mínima central [hpa] 931 Pronóstico de lluvia Su amplia circulación refuerza la probabilidad de lluvias puntuales torrenciales (150 a 250 mm) en Michoacán (costa y este) y Guerrero (costa y oeste); lluvias puntuales intensas (75 a 150 mm) en Colima; así como lluvias muy fuertes (50 a 75 mm) en Jalisco (sur) y Oaxaca (oeste).</span>
+<span>Su amplia circulación refuerza la probabilidad de lluvias puntuales torrenciales (150 a 250 mm) en Michoacán (costa y este) y Guerrero (costa y oeste); lluvias puntuales intensas (75 a 150 mm) en Colima; así como lluvias muy fuertes (50 a 75 mm) en Jalisco (sur) y Oaxaca (oeste).</span>
+</div>
+
+<div class="effect">
+<b>Viento en costas</b>
+<span>No confirmado</span>
 </div>
 
 <div class="effect">
 <b>Oleaje</b>
-<span>oleaje elevado en sus costas. Condiciones Actuales Hora local (hora GMT) 12:00 horas (18:00 horas GMT) Ubicación del centro Latitud Norte: 15.6 Longitud Oeste: 102.1 Distancia al lugar más cercano A 240 km al sur-suroeste de Zihuatanejo, Gro., y a 445 km al sur-sureste de Manzanillo, Col. Desplazamiento actual Hacia el noroeste (315°) a 7 km/h</span>
+<span>de 6.0 a 8.0 metros de altura en costas de Colima, Michoacán y Guerrero; así como oleaje de 2.0 a 3.0 metros de altura en costas de Jalisco y Oaxaca, disminuyendo durante el día.</span>
 </div>
 
 <div class="effect">
 <b>Viento máximo del ciclón</b>
 <span>
-230 km/h sostenidos ·
-rachas de 280 km/h
+230 km/h sostenidos · rachas de 280 km/h
 </span>
 </div>
 
@@ -271,19 +303,15 @@ rachas de 280 km/h
 <div class="effect">
 <b>Fecha y hora</b>
 <span>
-2026-09-23 ·
-12:00 horas
-(18:00 horas GMT)
+2026-09-23 · 12:00 horas (18:00 horas GMT)
 </span>
 </div>
 
-<div class="effect">
-<b>Fuente</b>
-<span>
-Servicio Meteorológico Nacional /
-Comisión Nacional del Agua.
-No se utilizan datos del NHC ni de fuentes secundarias.
-</span>
+<div class="source">
+Los campos que el actualizador no puede identificar
+inequívocamente en la publicación oficial se muestran como
+<strong>No confirmado</strong>. No se completan datos con NHC
+ni con fuentes secundarias.
 </div>
 
 </section>
@@ -294,13 +322,12 @@ No se utilizan datos del NHC ni de fuentes secundarias.
 <div>
 
 <b>Corte mostrado:</b>
-2026-09-23 ·
-12:00 horas.
+2026-09-23 · 12:00 horas.
 
 <br>
 
-Fuente exclusiva de datos:
-SMN / CONAGUA.
+Fuente exclusiva:
+Servicio Meteorológico Nacional / CONAGUA.
 
 <br>
 
@@ -308,13 +335,12 @@ Actualización automática mediante GitHub Actions.
 
 </div>
 
-<a class="btn"
+<a
+class="btn"
 href="https://smn.conagua.gob.mx/tools/GUI/PortalLaravel/public/WebAviso"
 target="_blank"
 rel="noopener">
-
 Abrir aviso oficial SMN ↗
-
 </a>
 
 </div>
@@ -322,4 +348,5 @@ Abrir aviso oficial SMN ↗
 </main>
 
 </body>
+
 </html>
