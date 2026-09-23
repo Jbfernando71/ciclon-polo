@@ -5,6 +5,7 @@ import html
 from pathlib import Path
 from bs4 import BeautifulSoup
 from datetime import datetime
+from urllib.parse import urljoin, urlparse
 
 
 # ============================================================
@@ -12,6 +13,7 @@ from datetime import datetime
 # ============================================================
 
 URL = "https://smn.conagua.gob.mx/tools/GUI/PortalLaravel/public/WebAviso"
+DOMINIO_SMM = "smn.conagua.gob.mx"
 INDEX = Path("index.html")
 
 HEADERS = {
@@ -51,7 +53,7 @@ def buscar(patron, texto, flags=re.IGNORECASE):
 
 
 # ============================================================
-# CONSULTAR EXCLUSIVAMENTE SMN / CONAGUA
+# CONSULTAR SMN / CONAGUA
 # ============================================================
 
 def obtener_smn():
@@ -69,12 +71,6 @@ def obtener_smn():
 
         respuesta.raise_for_status()
 
-    except requests.exceptions.Timeout:
-        raise RuntimeError(
-            "El portal del SMN excedió el tiempo máximo "
-            "de respuesta."
-        )
-
     except requests.exceptions.RequestException as e:
         raise RuntimeError(
             f"No fue posible consultar SMN/CONAGUA: {e}"
@@ -84,6 +80,13 @@ def obtener_smn():
     print("Tamaño:", len(respuesta.content), "bytes")
 
     soup = BeautifulSoup(
+        respuesta.text,
+        "html.parser"
+    )
+
+    # Conservamos el soup ORIGINAL para localizar
+    # imágenes y tablas.
+    soup_datos = BeautifulSoup(
         respuesta.text,
         "html.parser"
     )
@@ -108,11 +111,10 @@ def obtener_smn():
         re.IGNORECASE
     ):
         raise RuntimeError(
-            "No pude confirmar la presencia de Polo "
-            "en la publicación oficial."
+            "No pude confirmar la presencia de Polo."
         )
 
-    return texto
+    return texto, soup_datos
 
 
 # ============================================================
@@ -146,22 +148,11 @@ def aislar_polo(texto):
         pos + 18000
     )
 
-    bloque = texto[inicio:fin]
-
-    if not re.search(
-        r"\bPolo\b",
-        bloque,
-        re.IGNORECASE
-    ):
-        raise RuntimeError(
-            "No fue posible aislar el contexto de Polo."
-        )
-
-    return bloque
+    return texto[inicio:fin]
 
 
 # ============================================================
-# EXTRAER HISTORIAL / ÚLTIMO AVISO
+# EXTRAER ÚLTIMO AVISO
 # ============================================================
 
 def extraer_registro_actual(texto):
@@ -178,6 +169,7 @@ def extraer_registro_actual(texto):
         \(
         (?P<gmt>\d{2}:\d{2})
         \s+horas\s+GMT
+        (?:[^)]*)?
         \)
         \s+
         (?P<lat>\d{1,2}(?:\.\d+)?)
@@ -207,49 +199,41 @@ def extraer_registro_actual(texto):
             "referencia": limpiar(
                 m.group("referencia")
             ),
-            "viento": int(
-                m.group("viento")
-            ),
-            "racha": int(
-                m.group("racha")
-            ),
+            "viento": int(m.group("viento")),
+            "racha": int(m.group("racha")),
         }
 
         lat = float(registro["lat"])
         lon = float(registro["lon"])
 
-        if not (0 <= registro["aviso"] <= 200):
+        if not 0 <= registro["aviso"] <= 200:
             continue
 
-        if not (0 <= lat <= 35):
+        if not 0 <= lat <= 35:
             continue
 
-        if not (80 <= lon <= 130):
+        if not 80 <= lon <= 130:
             continue
 
-        if not (20 <= registro["viento"] <= 400):
+        if not 20 <= registro["viento"] <= 400:
             continue
 
-        if not (20 <= registro["racha"] <= 450):
+        if not 20 <= registro["racha"] <= 450:
             continue
 
         registros.append(registro)
 
     if not registros:
         raise RuntimeError(
-            "Polo aparece en el portal, pero no pude "
-            "validar el registro del último aviso."
+            "No pude validar el último aviso de Polo."
         )
 
     def clave(r):
-
-        fecha_hora = datetime.strptime(
-            f"{r['fecha']} {r['hora']}",
-            "%Y-%m-%d %H:%M"
-        )
-
         return (
-            fecha_hora,
+            datetime.strptime(
+                f"{r['fecha']} {r['hora']}",
+                "%Y-%m-%d %H:%M"
+            ),
             r["aviso"]
         )
 
@@ -260,100 +244,51 @@ def extraer_registro_actual(texto):
 
 
 # ============================================================
-# LOCALIZAR BLOQUE DE CONDICIONES ACTUALES
+# BLOQUE DE CONDICIONES ACTUALES
 # ============================================================
 
 def obtener_bloque_actual(texto, datos):
 
-    hora = re.escape(datos["hora"])
-    gmt = re.escape(datos["gmt"])
     lat = re.escape(datos["lat"])
     lon = re.escape(datos["lon"])
 
-    patrones_inicio = [
-        (
-            r"Condiciones\s+Actuales"
-            r".{0,250}?"
-            + hora +
-            r"\s+horas"
-            r".{0,150}?"
-            + gmt +
-            r"\s+horas\s+GMT"
-        ),
-        (
-            r"Condiciones\s+Actuales"
-            r".{0,500}?"
-            r"Latitud\s+Norte:\s*"
-            + lat +
-            r".{0,150}?"
-            r"Longitud\s+Oeste:\s*"
-            + lon
-        ),
-    ]
-
-    inicio = None
-
-    for patron in patrones_inicio:
-
-        m = re.search(
-            patron,
+    candidatos = list(
+        re.finditer(
+            r"Condiciones\s+Actuales",
             texto,
-            re.IGNORECASE | re.DOTALL
+            re.IGNORECASE
         )
+    )
 
-        if m:
-            inicio = m.start()
-            break
+    for candidato in reversed(candidatos):
 
-    if inicio is None:
+        fragmento = texto[
+            candidato.start():
+            candidato.start() + 9000
+        ]
 
-        candidatos = list(
-            re.finditer(
-                r"Condiciones\s+Actuales",
-                texto,
+        if (
+            re.search(
+                rf"Latitud\s+Norte:\s*{lat}",
+                fragmento,
                 re.IGNORECASE
             )
-        )
+            and
+            re.search(
+                rf"Longitud\s+Oeste:\s*{lon}",
+                fragmento,
+                re.IGNORECASE
+            )
+        ):
+            return fragmento
 
-        for candidato in reversed(candidatos):
-
-            fragmento = texto[
-                candidato.start():
-                candidato.start() + 6000
-            ]
-
-            if (
-                re.search(
-                    rf"Latitud\s+Norte:\s*{lat}",
-                    fragmento,
-                    re.IGNORECASE
-                )
-                and
-                re.search(
-                    rf"Longitud\s+Oeste:\s*{lon}",
-                    fragmento,
-                    re.IGNORECASE
-                )
-            ):
-                inicio = candidato.start()
-                break
-
-    if inicio is None:
-        raise RuntimeError(
-            "No pude identificar inequívocamente "
-            "el bloque de Condiciones Actuales de Polo."
-        )
-
-    bloque = texto[
-        inicio:
-        min(len(texto), inicio + 9000)
-    ]
-
-    return bloque
+    raise RuntimeError(
+        "No pude identificar el bloque actual de Polo."
+    )
 
 
 # ============================================================
-# EXTRAER CLASIFICACIÓN
+# CLASIFICACIÓN
 # ============================================================
 
 def extraer_clasificacion(texto, datos):
@@ -379,9 +314,7 @@ def extraer_clasificacion(texto, datos):
 
         if m:
 
-            valor = limpiar(
-                m.group(1)
-            )
+            valor = limpiar(m.group(1))
 
             categoria = re.search(
                 r"categor[ií]a\s+([1-5])",
@@ -408,11 +341,6 @@ def extraer_clasificacion(texto, datos):
                 re.IGNORECASE
             ):
                 return "Depresión tropical"
-
-    # --------------------------------------------------------
-    # Segunda búsqueda cerca de Polo.
-    # NO inferimos la categoría a partir del viento.
-    # --------------------------------------------------------
 
     contexto = aislar_polo(texto)
 
@@ -444,25 +372,17 @@ def extraer_clasificacion(texto, datos):
                     + categoria.group(1)
                 )
 
-            if re.search(
-                r"Tormenta",
-                valor,
-                re.IGNORECASE
-            ):
+            if "tormenta" in valor.lower():
                 return "Tormenta tropical"
 
-            if re.search(
-                r"Depresi[oó]n",
-                valor,
-                re.IGNORECASE
-            ):
+            if "depres" in valor.lower():
                 return "Depresión tropical"
 
     return "No confirmado"
 
 
 # ============================================================
-# EXTRAER DATOS DEL BLOQUE ACTUAL
+# DATOS ACTUALES
 # ============================================================
 
 def extraer_datos_actuales(texto, datos):
@@ -474,13 +394,7 @@ def extraer_datos_actuales(texto, datos):
 
     adicionales = {}
 
-    # --------------------------------------------------------
     # PRESIÓN
-    #
-    # Ejemplo observado:
-    # Presión mínima central [hpa] 931
-    # --------------------------------------------------------
-
     presion = buscar(
         r"Presi[oó]n\s+m[ií]nima\s+central"
         r"\s*(?:\[\s*hpa\s*\])?"
@@ -495,10 +409,7 @@ def extraer_datos_actuales(texto, datos):
         else "No confirmado"
     )
 
-    # --------------------------------------------------------
     # MOVIMIENTO
-    # --------------------------------------------------------
-
     movimiento = buscar(
         r"Desplazamiento\s+actual\s+"
         r"(.+?)"
@@ -508,210 +419,268 @@ def extraer_datos_actuales(texto, datos):
     )
 
     adicionales["movimiento"] = (
-        movimiento
-        if movimiento
-        else "No confirmado"
+        movimiento or "No confirmado"
     )
 
-    # --------------------------------------------------------
     # LLUVIA
-    # --------------------------------------------------------
-
     lluvia = buscar(
         r"Pron[oó]stico\s+de\s+lluvia\s+"
         r"(.+?)"
-        r"(?="
-        r"\s+(?:"
-        r"Pron[oó]stico\s+de\s+viento|"
-        r"Pron[oó]stico\s+de\s+oleaje|"
-        r"Viento\s+y\s+oleaje|"
-        r"Vientos?\s+en\s+costas?|"
-        r"Oleaje|"
-        r"Zona\s+de\s+prevenci[oó]n|"
-        r"Zona\s+de\s+vigilancia|"
-        r"Se\s+mantiene\s+zona|"
-        r"Se\s+establece\s+zona|"
-        r"Comentarios\s+adicionales|"
-        r"Recomendaciones|"
-        r"EL\s+SIGUIENTE\s+AVISO"
-        r")"
-        r")",
+        r"(?=\s+Zona\s+de\s+vigilancia)",
         bloque,
         re.IGNORECASE | re.DOTALL
     )
 
     adicionales["lluvia"] = (
-        lluvia
-        if lluvia
-        else "No confirmado"
+        lluvia or "No confirmado"
     )
 
-    # --------------------------------------------------------
-    # VIENTO COSTERO - V3.1
-    #
-    # Primero buscamos un apartado específico de viento.
-    # --------------------------------------------------------
-
-    viento_costero = buscar(
-        r"(?:"
-        r"Pron[oó]stico\s+de\s+viento|"
-        r"Vientos?\s+en\s+costas?"
-        r")"
-        r"\s+"
+    # ZONA
+    vigilancia = buscar(
+        r"Zona\s+de\s+vigilancia\s+"
         r"(.+?)"
-        r"(?="
-        r"\s+(?:"
-        r"Pron[oó]stico\s+de\s+oleaje|"
-        r"Oleaje|"
-        r"Zona\s+de\s+prevenci[oó]n|"
-        r"Zona\s+de\s+vigilancia|"
-        r"Se\s+mantiene\s+zona|"
-        r"Se\s+establece\s+zona|"
-        r"Comentarios\s+adicionales|"
-        r"Recomendaciones|"
-        r"EL\s+SIGUIENTE\s+AVISO"
-        r")"
-        r")",
+        r"(?=\s+Comentarios\s+adicionales)",
         bloque,
         re.IGNORECASE | re.DOTALL
     )
 
-    # --------------------------------------------------------
-    # Si no existe un apartado específico, buscamos
-    # "Comentarios adicionales".
-    #
-    # Ejemplo observado en SMN:
-    #
-    # Comentarios adicionales Se prevén rachas de viento
-    # de 70 a 90 km/h ...
-    #
-    # --------------------------------------------------------
+    adicionales["vigilancia"] = (
+        vigilancia or "No confirmado"
+    )
 
-    if not viento_costero:
+    # COMENTARIOS ADICIONALES
+    comentarios = buscar(
+        r"Comentarios\s+adicionales\s+"
+        r"(.+?)"
+        r"(?=\s+Recomendaciones)",
+        bloque,
+        re.IGNORECASE | re.DOTALL
+    )
 
-        comentarios = buscar(
-            r"Comentarios\s+adicionales\s+"
-            r"(.+?)"
-            r"(?="
-            r"\s+(?:"
-            r"Recomendaciones|"
-            r"EL\s+SIGUIENTE\s+AVISO|"
-            r"EL\s+PR[ÓO]XIMO\s+AVISO"
+    if comentarios:
+
+        # VIENTO COSTERO
+        viento_costero = buscar(
+            r"("
+            r"(?:Se\s+prev[eé]n\s+)?"
+            r"rachas?\s+de\s+viento\s+"
+            r"de\s+\d+(?:\.\d+)?\s+a\s+"
+            r"\d+(?:\.\d+)?\s*km/h"
+            r".*?"
             r")"
+            r"(?="
+            r"\s+y\s+oleaje|"
+            r";|"
+            r"\.|$"
             r")",
-            bloque,
+            comentarios,
             re.IGNORECASE | re.DOTALL
         )
 
-        if comentarios:
+        # OLEAJE
+        oleaje = buscar(
+            r"("
+            r"oleaje\s+de\s+"
+            r"\d+(?:\.\d+)?\s+a\s+"
+            r"\d+(?:\.\d+)?\s+metros?"
+            r".*"
+            r")",
+            comentarios,
+            re.IGNORECASE | re.DOTALL
+        )
 
-            viento_costero = buscar(
-                r"("
-                r"(?:Se\s+prev[eé]n\s+)?"
-                r"rachas?\s+de\s+viento\s+"
-                r"de\s+\d+\s+a\s+\d+\s*km/h"
-                r".*?"
-                r")"
-                r"(?="
-                r"(?:"
-                r";\s*as[ií]\s+como\s+oleaje|"
-                r"\.\s|$"
-                r")"
-                r")",
-                comentarios,
-                re.IGNORECASE | re.DOTALL
-            )
+    else:
+
+        viento_costero = None
+        oleaje = None
 
     adicionales["viento_costero"] = (
-        viento_costero
-        if viento_costero
-        else "No confirmado"
-    )
-
-    # --------------------------------------------------------
-    # OLEAJE
-    # --------------------------------------------------------
-
-    oleaje = buscar(
-        r"(?:Pron[oó]stico\s+de\s+oleaje|Oleaje)"
-        r"\s*[:\-]?\s*"
-        r"(.+?)"
-        r"(?="
-        r"\s+(?:"
-        r"Zona\s+de\s+prevenci[oó]n|"
-        r"Zona\s+de\s+vigilancia|"
-        r"Se\s+mantiene\s+zona|"
-        r"Se\s+establece\s+zona|"
-        r"Comentarios\s+adicionales|"
-        r"Recomendaciones|"
-        r"EL\s+SIGUIENTE\s+AVISO"
-        r")"
-        r")",
-        bloque,
-        re.IGNORECASE | re.DOTALL
+        viento_costero or "No confirmado"
     )
 
     adicionales["oleaje"] = (
-        oleaje
-        if oleaje
-        else "No confirmado"
-    )
-
-    # --------------------------------------------------------
-    # ZONAS DE PREVENCIÓN / VIGILANCIA
-    # --------------------------------------------------------
-
-    vigilancia = buscar(
-        r"("
-        r"(?:Se\s+mantiene|Se\s+establece)"
-        r"\s+zona\s+de\s+"
-        r"(?:prevenci[oó]n|vigilancia)"
-        r".+?"
-        r")"
-        r"(?="
-        r"\s+(?:"
-        r"Pron[oó]stico|"
-        r"Comentarios\s+adicionales|"
-        r"Recomendaciones|"
-        r"EL\s+SIGUIENTE\s+AVISO|"
-        r"El\s+Servicio\s+Meteorol[oó]gico"
-        r")"
-        r")",
-        bloque,
-        re.IGNORECASE | re.DOTALL
-    )
-
-    if not vigilancia:
-
-        vigilancia = buscar(
-            r"("
-            r"Zona\s+de\s+"
-            r"(?:prevenci[oó]n|vigilancia)"
-            r".+?"
-            r")"
-            r"(?="
-            r"\s+(?:"
-            r"Pron[oó]stico|"
-            r"Comentarios\s+adicionales|"
-            r"Recomendaciones|"
-            r"EL\s+SIGUIENTE\s+AVISO"
-            r")"
-            r")",
-            bloque,
-            re.IGNORECASE | re.DOTALL
-        )
-
-    adicionales["vigilancia"] = (
-        vigilancia
-        if vigilancia
-        else "No confirmado"
+        oleaje or "No confirmado"
     )
 
     return adicionales
 
 
 # ============================================================
-# EXTRAER TODOS LOS DATOS
+# MAPA OFICIAL SMN
+# ============================================================
+
+def extraer_mapa_trayectoria(soup):
+
+    candidatos = []
+
+    for img in soup.find_all("img"):
+
+        src = img.get("src")
+
+        if not src:
+            continue
+
+        alt = limpiar(
+            img.get("alt", "")
+        )
+
+        title = limpiar(
+            img.get("title", "")
+        )
+
+        texto = (
+            alt + " " +
+            title + " " +
+            src
+        ).lower()
+
+        puntuacion = 0
+
+        if "trayectoria" in texto:
+            puntuacion += 10
+
+        if "pronost" in texto:
+            puntuacion += 5
+
+        if "imgtray" in src.lower():
+            puntuacion += 10
+
+        if puntuacion:
+            candidatos.append(
+                (puntuacion, src)
+            )
+
+    if not candidatos:
+
+        print(
+            "No se encontró una imagen de trayectoria "
+            "identificable."
+        )
+
+        return None
+
+    candidatos.sort(
+        reverse=True
+    )
+
+    src = candidatos[0][1]
+
+    url_imagen = urljoin(
+        URL,
+        src
+    )
+
+    parsed = urlparse(
+        url_imagen
+    )
+
+    # --------------------------------------------------------
+    # SEGURIDAD:
+    # únicamente dominio oficial SMN/CONAGUA.
+    # --------------------------------------------------------
+
+    if parsed.hostname != DOMINIO_SMM:
+
+        print(
+            "La imagen localizada no pertenece "
+            "al dominio oficial SMN."
+        )
+
+        return None
+
+    print(
+        "Mapa oficial:",
+        url_imagen
+    )
+
+    return url_imagen
+
+
+# ============================================================
+# TABLA DE PRONÓSTICO
+# ============================================================
+
+def extraer_pronostico(soup):
+
+    resultados = []
+
+    for tabla in soup.find_all("table"):
+
+        filas = tabla.find_all("tr")
+
+        if not filas:
+            continue
+
+        encabezado = limpiar(
+            filas[0].get_text(
+                " ",
+                strip=True
+            )
+        ).lower()
+
+        # ----------------------------------------------------
+        # Identificar inequívocamente tabla de pronóstico.
+        # ----------------------------------------------------
+
+        if not (
+            "día/hora" in encabezado
+            or "dia/hora" in encabezado
+        ):
+            continue
+
+        if "latitud" not in encabezado:
+            continue
+
+        if "categor" not in encabezado:
+            continue
+
+        for fila in filas[1:]:
+
+            celdas = [
+                limpiar(
+                    celda.get_text(
+                        " ",
+                        strip=True
+                    )
+                )
+                for celda
+                in fila.find_all(
+                    ["td", "th"]
+                )
+            ]
+
+            if len(celdas) < 6:
+                continue
+
+            # Validar formato Día/Hora.
+            if not re.fullmatch(
+                r"\d{1,2}/\d{2}h",
+                celdas[0]
+            ):
+                continue
+
+            resultados.append({
+                "dia_hora": celdas[0],
+                "lat": celdas[1],
+                "lon": celdas[2],
+                "viento": celdas[3],
+                "categoria": celdas[4],
+                "ubicacion": celdas[5],
+            })
+
+        if resultados:
+            break
+
+    print(
+        "Posiciones de pronóstico encontradas:",
+        len(resultados)
+    )
+
+    return resultados
+
+
+# ============================================================
+# DATOS COMPLETOS
 # ============================================================
 
 def extraer_datos(texto):
@@ -727,20 +696,18 @@ def extraer_datos(texto):
         )
     )
 
-    adicionales = extraer_datos_actuales(
-        texto,
-        datos
-    )
-
     datos.update(
-        adicionales
+        extraer_datos_actuales(
+            texto,
+            datos
+        )
     )
 
     return datos
 
 
 # ============================================================
-# VALIDACIÓN FINAL
+# VALIDACIÓN
 # ============================================================
 
 def validar_datos(datos):
@@ -769,74 +736,120 @@ def validar_datos(datos):
 
     if faltantes:
         raise RuntimeError(
-            "Faltan campos esenciales del aviso: "
+            "Faltan campos esenciales: "
             + ", ".join(faltantes)
         )
 
     if datos["racha"] < datos["viento"]:
         raise RuntimeError(
-            "Validación rechazada: la racha es inferior "
-            "al viento sostenido."
-        )
-
-    if not re.search(
-        r"(?:km|kil[oó]metros?)",
-        datos["referencia"],
-        re.IGNORECASE
-    ):
-        raise RuntimeError(
-            "La referencia geográfica no parece válida."
+            "La racha es inferior al viento sostenido."
         )
 
 
 # ============================================================
-# GENERAR DASHBOARD
+# HTML TABLA PRONÓSTICO
 # ============================================================
 
-def generar_html(d):
+def generar_tabla_pronostico(pronostico):
 
-    aviso = escapar(d["aviso"])
-    fecha = escapar(d["fecha"])
-    hora = escapar(d["hora"])
-    gmt = escapar(d["gmt"])
+    if not pronostico:
 
-    lat = escapar(d["lat"])
-    lon = escapar(d["lon"])
+        return """
+        <div class="effect">
+        <b>Pronóstico</b>
+        <span>No confirmado</span>
+        </div>
+        """
 
-    referencia = escapar(
-        d["referencia"]
+    filas = ""
+
+    for p in pronostico:
+
+        filas += f"""
+        <tr>
+        <td>{escapar(p["dia_hora"])}</td>
+        <td>{escapar(p["lat"])}° N</td>
+        <td>{escapar(p["lon"])}° O</td>
+        <td>{escapar(p["viento"])} km/h</td>
+        <td>{escapar(p["categoria"])}</td>
+        <td>{escapar(p["ubicacion"])}</td>
+        </tr>
+        """
+
+    return f"""
+    <div class="table-wrap">
+    <table>
+    <thead>
+    <tr>
+    <th>Día/Hora</th>
+    <th>Latitud</th>
+    <th>Longitud</th>
+    <th>Viento/Rachas</th>
+    <th>Categoría</th>
+    <th>Ubicación</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    {filas}
+    </tbody>
+    </table>
+    </div>
+    """
+
+
+# ============================================================
+# GENERAR HTML
+# ============================================================
+
+def generar_html(
+    d,
+    mapa,
+    pronostico
+):
+
+    mapa_html = ""
+
+    if mapa:
+
+        mapa_seguro = escapar(
+            mapa
+        )
+
+        mapa_html = f"""
+        <a
+        href="{mapa_seguro}"
+        target="_blank"
+        rel="noopener">
+
+        <img
+        class="mapa"
+        src="{mapa_seguro}"
+        alt="Trayectoria pronóstico de Polo publicada por SMN/CONAGUA">
+
+        </a>
+
+        <div class="map-note">
+        Trayectoria pronóstico publicada por
+        el Servicio Meteorológico Nacional /
+        CONAGUA.
+        </div>
+        """
+
+    else:
+
+        mapa_html = """
+        <div class="effect">
+        <b>Mapa de trayectoria</b>
+        <span>
+        No confirmado en la publicación oficial.
+        </span>
+        </div>
+        """
+
+    tabla_html = generar_tabla_pronostico(
+        pronostico
     )
-
-    clasificacion = escapar(
-        d["clasificacion"]
-    )
-
-    presion = escapar(
-        d["presion"]
-    )
-
-    movimiento = escapar(
-        d["movimiento"]
-    )
-
-    lluvia = escapar(
-        d["lluvia"]
-    )
-
-    viento_costero = escapar(
-        d["viento_costero"]
-    )
-
-    oleaje = escapar(
-        d["oleaje"]
-    )
-
-    vigilancia = escapar(
-        d["vigilancia"]
-    )
-
-    viento = d["viento"]
-    racha = d["racha"]
 
     return f"""<!doctype html>
 <html lang="es">
@@ -853,7 +866,9 @@ content="width=device-width,initial-scale=1">
 http-equiv="refresh"
 content="900">
 
-<title>Dashboard SMN | Ciclón Tropical Polo</title>
+<title>
+Dashboard SMN | Ciclón Tropical Polo
+</title>
 
 <style>
 
@@ -865,8 +880,6 @@ content="900">
 --line:#27445f;
 --accent:#49a7ff;
 --warn:#ffbd4a;
---danger:#ff6868;
---ok:#67d391
 }}
 
 *{{
@@ -945,7 +958,7 @@ gap:14px
 }}
 
 .panel h2{{
-font-size:16px;
+font-size:17px;
 margin:0 0 14px;
 color:#d8eaff
 }}
@@ -978,6 +991,48 @@ border-radius:10px;
 line-height:1.55
 }}
 
+.mapa{{
+display:block;
+width:100%;
+max-height:720px;
+object-fit:contain;
+background:#fff;
+border-radius:12px;
+border:1px solid var(--line)
+}}
+
+.map-note{{
+margin-top:8px;
+font-size:12px;
+color:var(--muted)
+}}
+
+.table-wrap{{
+overflow-x:auto
+}}
+
+table{{
+width:100%;
+border-collapse:collapse;
+font-size:13px
+}}
+
+th,td{{
+padding:11px;
+border-bottom:1px solid var(--line);
+text-align:left;
+vertical-align:top
+}}
+
+th{{
+color:#bcd3e7;
+background:#0d1d2c
+}}
+
+td{{
+color:#dce9f5
+}}
+
 .footer{{
 margin-top:14px;
 display:flex;
@@ -991,7 +1046,7 @@ font-size:12px
 .btn{{
 display:inline-block;
 background:#1c75bc;
-color:#fff;
+color:white;
 text-decoration:none;
 padding:10px 14px;
 border-radius:9px;
@@ -1036,9 +1091,11 @@ padding:12px
 
 </head>
 
+
 <body>
 
 <main class="wrap">
+
 
 <div class="top">
 
@@ -1056,7 +1113,8 @@ CONAGUA · Pacífico mexicano
 </div>
 
 <div class="badge">
-● SEGUIMIENTO ACTIVO · AVISO {aviso}
+● SEGUIMIENTO ACTIVO ·
+AVISO {escapar(d["aviso"])}
 </div>
 
 </div>
@@ -1066,32 +1124,45 @@ CONAGUA · Pacífico mexicano
 
 <div class="card">
 <small>Clasificación</small>
-<div class="big">{clasificacion}</div>
+<div class="big">
+{escapar(d["clasificacion"])}
+</div>
 </div>
 
 <div class="card">
 <small>Posición</small>
-<div class="big">{lat}° N · {lon}° O</div>
+<div class="big">
+{escapar(d["lat"])}° N ·
+{escapar(d["lon"])}° O
+</div>
 </div>
 
 <div class="card">
 <small>Viento sostenido</small>
-<div class="big">{viento} km/h</div>
+<div class="big">
+{d["viento"]} km/h
+</div>
 </div>
 
 <div class="card">
 <small>Rachas</small>
-<div class="big">{racha} km/h</div>
+<div class="big">
+{d["racha"]} km/h
+</div>
 </div>
 
 <div class="card">
 <small>Movimiento</small>
-<div class="big">{movimiento}</div>
+<div class="big">
+{escapar(d["movimiento"])}
+</div>
 </div>
 
 <div class="card">
 <small>Presión mínima</small>
-<div class="big">{presion}</div>
+<div class="big">
+{escapar(d["presion"])}
+</div>
 </div>
 
 </section>
@@ -1099,24 +1170,30 @@ CONAGUA · Pacífico mexicano
 
 <div class="two">
 
+
 <section class="panel">
 
 <h2>Situación actual</h2>
 
 <div class="effect">
 <b>Referencia</b>
-<span>{referencia}</span>
+<span>
+{escapar(d["referencia"])}
+</span>
 </div>
 
 <div class="effect">
 <b>Coordenadas</b>
-<span>{lat}° N · {lon}° O</span>
+<span>
+{escapar(d["lat"])}° N ·
+{escapar(d["lon"])}° O
+</span>
 </div>
 
 <div class="alert">
 <b>Zona de prevención / vigilancia</b>
 <br>
-{vigilancia}
+{escapar(d["vigilancia"])}
 </div>
 
 </section>
@@ -1124,27 +1201,28 @@ CONAGUA · Pacífico mexicano
 
 <section class="panel">
 
-<h2>Efectos confirmados por SMN/CONAGUA</h2>
+<h2>
+Efectos confirmados por SMN/CONAGUA
+</h2>
 
 <div class="effect">
 <b>Lluvias</b>
-<span>{lluvia}</span>
+<span>
+{escapar(d["lluvia"])}
+</span>
 </div>
 
 <div class="effect">
 <b>Viento en costas</b>
-<span>{viento_costero}</span>
+<span>
+{escapar(d["viento_costero"])}
+</span>
 </div>
 
 <div class="effect">
 <b>Oleaje</b>
-<span>{oleaje}</span>
-</div>
-
-<div class="effect">
-<b>Viento máximo del ciclón</b>
 <span>
-{viento} km/h sostenidos · rachas de {racha} km/h
+{escapar(d["oleaje"])}
 </span>
 </div>
 
@@ -1157,29 +1235,68 @@ CONAGUA · Pacífico mexicano
 class="panel"
 style="margin-top:14px">
 
-<h2>Datos del aviso oficial</h2>
+<h2>
+Trayectoria pronóstico — SMN/CONAGUA
+</h2>
+
+{mapa_html}
+
+</section>
+
+
+<section
+class="panel"
+style="margin-top:14px">
+
+<h2>
+Pronóstico oficial de trayectoria
+</h2>
+
+{tabla_html}
+
+</section>
+
+
+<section
+class="panel"
+style="margin-top:14px">
+
+<h2>
+Datos del aviso oficial
+</h2>
 
 <div class="effect">
 <b>Aviso SMN/CONAGUA</b>
-<span>No. {aviso}</span>
+<span>
+No. {escapar(d["aviso"])}
+</span>
 </div>
 
 <div class="effect">
 <b>Fecha y hora</b>
 <span>
-{fecha} · {hora} horas ({gmt} horas GMT)
+{escapar(d["fecha"])} ·
+{escapar(d["hora"])} horas
+({escapar(d["gmt"])} horas GMT)
 </span>
 </div>
 
 <div class="source">
 
-Los campos que el actualizador no puede identificar
-inequívocamente en la publicación oficial se muestran como
+Fuente exclusiva:
+Servicio Meteorológico Nacional /
+Comisión Nacional del Agua.
+
+<br>
+
+Los datos que no pueden confirmarse
+inequívocamente se muestran como
 <strong>No confirmado</strong>.
 
 <br>
 
-No se completan datos con NHC ni con fuentes secundarias.
+No se utilizan datos del NHC
+ni de fuentes secundarias.
 
 </div>
 
@@ -1191,16 +1308,13 @@ No se completan datos con NHC ni con fuentes secundarias.
 <div>
 
 <b>Corte mostrado:</b>
-{fecha} · {hora} horas.
+{escapar(d["fecha"])} ·
+{escapar(d["hora"])} horas.
 
 <br>
 
-Fuente exclusiva:
-Servicio Meteorológico Nacional / CONAGUA.
-
-<br>
-
-Actualización automática mediante GitHub Actions.
+Actualización automática
+mediante GitHub Actions.
 
 </div>
 
@@ -1215,6 +1329,7 @@ Abrir aviso oficial SMN ↗
 </a>
 
 </div>
+
 
 </main>
 
@@ -1265,7 +1380,7 @@ def obtener_corte_html_actual():
 
 def actualizar():
 
-    texto = obtener_smn()
+    texto, soup = obtener_smn()
 
     datos = extraer_datos(
         texto
@@ -1275,24 +1390,34 @@ def actualizar():
         datos
     )
 
+    mapa = extraer_mapa_trayectoria(
+        soup
+    )
+
+    pronostico = extraer_pronostico(
+        soup
+    )
+
     print()
-    print(
-        "========================================"
-    )
-    print(
-        " DATOS VALIDADOS"
-    )
-    print(
-        "========================================"
-    )
+    print("========================================")
+    print(" DATOS VALIDADOS")
+    print("========================================")
 
     for clave, valor in datos.items():
-        print(
-            f"{clave}: {valor}"
-        )
+        print(f"{clave}: {valor}")
+
+    print(
+        "mapa:",
+        mapa or "No confirmado"
+    )
+
+    print(
+        "filas pronóstico:",
+        len(pronostico)
+    )
 
     # --------------------------------------------------------
-    # IMPEDIR RETROCESOS
+    # EVITAR RETROCESO
     # --------------------------------------------------------
 
     nuevo_corte = datetime.strptime(
@@ -1307,16 +1432,18 @@ def actualizar():
         and nuevo_corte < corte_actual
     ):
         raise RuntimeError(
-            "El aviso recuperado es anterior al que ya "
-            "está publicado. index.html no será modificado."
+            "El aviso recuperado es anterior "
+            "al publicado."
         )
 
     nuevo_html = generar_html(
-        datos
+        datos,
+        mapa,
+        pronostico
     )
 
     # --------------------------------------------------------
-    # SI EL DASHBOARD YA ES IDÉNTICO, NO MODIFICAR.
+    # SIN CAMBIOS
     # --------------------------------------------------------
 
     if INDEX.exists():
@@ -1329,7 +1456,7 @@ def actualizar():
 
             print()
             print(
-                "El aviso no contiene cambios respecto "
+                "No existen cambios respecto "
                 "al dashboard publicado."
             )
 
@@ -1354,8 +1481,8 @@ def actualizar():
 
     print()
     print(
-        f"index.html actualizado con Aviso No. "
-        f"{datos['aviso']}."
+        f"index.html actualizado con "
+        f"Aviso No. {datos['aviso']}."
     )
 
 
@@ -1366,25 +1493,14 @@ def actualizar():
 def main():
 
     print()
-    print(
-        "========================================"
-    )
-    print(
-        " ACTUALIZADOR AUTOMÁTICO CICLÓN POLO V3.1"
-    )
-    print(
-        " Fuente exclusiva: SMN / CONAGUA"
-    )
-    print(
-        "========================================"
-    )
+    print("========================================")
+    print(" ACTUALIZADOR CICLÓN POLO V4")
+    print(" Fuente exclusiva: SMN / CONAGUA")
+    print(" Mapa + tabla de trayectoria automática")
+    print("========================================")
 
     actualizar()
 
-
-# ============================================================
-# EJECUCIÓN
-# ============================================================
 
 if __name__ == "__main__":
 
