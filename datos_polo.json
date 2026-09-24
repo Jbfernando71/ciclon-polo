@@ -1,0 +1,88 @@
+{
+  "ciclon": "Polo",
+  "fuente": "SMN / CONAGUA",
+  "url_oficial": "https://smn.conagua.gob.mx/tools/GUI/PortalLaravel/public/WebAviso?searchText=10822",
+  "aviso": 26,
+  "fecha": "2026-09-23",
+  "hora": "15:00",
+  "gmt": "21:00",
+  "clasificacion": "Huracán categoría 4",
+  "lat": "15.7",
+  "lon": "102.4",
+  "referencia": "A 240 km al sur-suroeste de Zihuatanejo, Gro., y 420 km al sur-sureste de Manzanillo, Col.",
+  "viento": 230,
+  "racha": 280,
+  "movimiento": "Hacia el noroeste (310°) a 11 km/h",
+  "presion": "932 hPa",
+  "lluvia": "Torrenciales (150 a 250 mm) en Michoacán (costa y este) y Guerrero (costa y oeste); intensas (75 a 150 mm) en Colima; muy fuertes (50 a 75 mm) en el sur de Jalisco y oeste de Oaxaca.",
+  "vigilancia": "Zona de prevención por vientos de tormenta tropical desde Técpan de Galeana, Gro., hasta Punta San Telmo, Mich.; zona de vigilancia desde el oeste de Punta San Telmo, Mich., hasta Playa Pérula, Jal.",
+  "viento_costero": "Rachas de 70 a 90 km/h en costas de Colima, Michoacán y Guerrero; de 40 a 60 km/h en Jalisco y Oaxaca.",
+  "oleaje": "Oleaje de 6 a 8 m en costas de Colima, Michoacán y Guerrero; de 2 a 3 m en Jalisco y Oaxaca.",
+  "mapa": "https://smn.conagua.gob.mx/tools/GUI/PortalLaravel/public/WebImg/ImgTray1790198354.jpg",
+  "pronostico": [
+    {
+      "dia_hora": "24/00h",
+      "lat": "16.3",
+      "lon": "103.0",
+      "viento": "240/295",
+      "categoria": "Huracán Cat. 4",
+      "ubicacion": "230 km al suroeste de Lázaro Cárdenas, Mich."
+    },
+    {
+      "dia_hora": "24/12h",
+      "lat": "17.1",
+      "lon": "104.0",
+      "viento": "250/305",
+      "categoria": "Huracán Cat. 4",
+      "ubicacion": "245 km al suroeste de Punta San Telmo, Mich."
+    },
+    {
+      "dia_hora": "25/00h",
+      "lat": "17.8",
+      "lon": "105.1",
+      "viento": "250/305",
+      "categoria": "Huracán Cat. 4",
+      "ubicacion": "350 km al sur-suroeste de Playa Pérula, Jal."
+    },
+    {
+      "dia_hora": "25/12h",
+      "lat": "18.5",
+      "lon": "106.4",
+      "viento": "240/295",
+      "categoria": "Huracán Cat. 4",
+      "ubicacion": "475 km al oeste-suroeste de Playa Pérula, Jal."
+    },
+    {
+      "dia_hora": "26/00h",
+      "lat": "19.2",
+      "lon": "107.6",
+      "viento": "230/280",
+      "categoria": "Huracán Cat. 4",
+      "ubicacion": "575 km al sur de Cabo San Lucas, B.C.S."
+    },
+    {
+      "dia_hora": "26/12h",
+      "lat": "20.1",
+      "lon": "108.6",
+      "viento": "220/270",
+      "categoria": "Huracán Cat. 4",
+      "ubicacion": "490 km al sur-suroeste de Cabo San Lucas, B.C.S."
+    },
+    {
+      "dia_hora": "27/12h",
+      "lat": "21.7",
+      "lon": "110.7",
+      "viento": "195/240",
+      "categoria": "Huracán Cat. 3",
+      "ubicacion": "365 km al oeste-suroeste de Cabo San Lucas, B.C.S."
+    },
+    {
+      "dia_hora": "28/12h",
+      "lat": "23.6",
+      "lon": "112.5",
+      "viento": "165/205",
+      "categoria": "Huracán Cat. 2",
+      "ubicacion": "125 km al oeste-suroeste de Cabo San Lázaro, B.C.S."
+    }
+  ]
+}

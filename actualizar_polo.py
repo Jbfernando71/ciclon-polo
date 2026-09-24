@@ -2,6 +2,7 @@ import requests
 import re
 import sys
 import html
+import json
 from pathlib import Path
 from bs4 import BeautifulSoup
 from datetime import datetime
@@ -16,7 +17,7 @@ URL_BASE = "https://smn.conagua.gob.mx/tools/GUI/PortalLaravel/public/WebAviso"
 POLO_ID = "10822"
 URL = f"{URL_BASE}?searchText={POLO_ID}"
 DOMINIO_SMM = "smn.conagua.gob.mx"
-INDEX = Path("index.html")
+DATOS = Path("datos_polo.json")
 
 HEADERS = {
     "User-Agent": (
@@ -862,7 +863,6 @@ def validar_datos(datos):
 
     obligatorios = [
         "aviso",
-        "fecha",
         "hora",
         "gmt",
         "lat",
@@ -895,743 +895,99 @@ def validar_datos(datos):
 
 
 # ============================================================
-# HTML TABLA PRONÓSTICO
+# JSON PÚBLICO PARA EL DASHBOARD
 # ============================================================
 
-def generar_tabla_pronostico(pronostico):
-
-    if not pronostico:
-
-        return """
-        <div class="effect">
-        <b>Pronóstico</b>
-        <span>No confirmado</span>
-        </div>
-        """
-
-    filas = ""
-
-    for p in pronostico:
-
-        filas += f"""
-        <tr>
-        <td>{escapar(p["dia_hora"])}</td>
-        <td>{escapar(p["lat"])}° N</td>
-        <td>{escapar(p["lon"])}° O</td>
-        <td>{escapar(p["viento"])} km/h</td>
-        <td>{escapar(p["categoria"])}</td>
-        <td>{escapar(p["ubicacion"])}</td>
-        </tr>
-        """
-
-    return f"""
-    <div class="table-wrap">
-    <table>
-    <thead>
-    <tr>
-    <th>Día/Hora</th>
-    <th>Latitud</th>
-    <th>Longitud</th>
-    <th>Viento/Rachas</th>
-    <th>Categoría</th>
-    <th>Ubicación</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    {filas}
-    </tbody>
-    </table>
-    </div>
-    """
-
-
-# ============================================================
-# GENERAR HTML
-# ============================================================
-
-def generar_html(
-    d,
-    mapa,
-    pronostico
-):
-
-    mapa_html = ""
-
-    if mapa:
-
-        mapa_seguro = escapar(
-            mapa
-        )
-
-        mapa_html = f"""
-        <a
-        href="{mapa_seguro}"
-        target="_blank"
-        rel="noopener">
-
-        <img
-        class="mapa"
-        src="{mapa_seguro}"
-        alt="Trayectoria pronóstico de Polo publicada por SMN/CONAGUA">
-
-        </a>
-
-        <div class="map-note">
-        Trayectoria pronóstico publicada por
-        el Servicio Meteorológico Nacional /
-        CONAGUA.
-        </div>
-        """
-
-    else:
-
-        mapa_html = """
-        <div class="effect">
-        <b>Mapa de trayectoria</b>
-        <span>
-        No confirmado en la publicación oficial.
-        </span>
-        </div>
-        """
-
-    tabla_html = generar_tabla_pronostico(
-        pronostico
-    )
-
-    return f"""<!doctype html>
-<html lang="es">
-
-<head>
-
-<meta charset="utf-8">
-
-<meta
-name="viewport"
-content="width=device-width,initial-scale=1">
-
-<meta
-http-equiv="refresh"
-content="900">
-
-<title>
-Dashboard SMN | Ciclón Tropical Polo
-</title>
-
-<style>
-
-:root{{
---bg:#07131f;
---panel:#102235;
---text:#eef6ff;
---muted:#a9bed2;
---line:#27445f;
---accent:#49a7ff;
---warn:#ffbd4a;
-}}
-
-*{{
-box-sizing:border-box
-}}
-
-body{{
-margin:0;
-background:linear-gradient(180deg,#07131f,#0a1928);
-color:var(--text);
-font-family:Segoe UI,Arial,sans-serif
-}}
-
-.wrap{{
-max-width:1450px;
-margin:auto;
-padding:22px
-}}
-
-.top{{
-display:flex;
-gap:18px;
-align-items:center;
-justify-content:space-between;
-flex-wrap:wrap
-}}
-
-h1{{
-font-size:26px;
-margin:0
-}}
-
-.sub{{
-color:var(--muted);
-margin-top:5px
-}}
-
-.badge{{
-background:#153653;
-border:1px solid #2c618d;
-padding:8px 12px;
-border-radius:999px;
-font-weight:700
-}}
-
-.grid{{
-display:grid;
-grid-template-columns:repeat(6,1fr);
-gap:12px;
-margin:20px 0
-}}
-
-.card,.panel{{
-background:rgba(16,34,53,.96);
-border:1px solid var(--line);
-border-radius:14px;
-padding:16px
-}}
-
-.card small{{
-color:var(--muted);
-text-transform:uppercase;
-font-weight:700
-}}
-
-.big{{
-font-size:22px;
-font-weight:800;
-margin-top:8px
-}}
-
-.two{{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:14px
-}}
-
-.panel h2{{
-font-size:17px;
-margin:0 0 14px;
-color:#d8eaff
-}}
-
-.effect{{
-padding:14px;
-background:#0d1d2c;
-border-radius:10px;
-border:1px solid #223d55;
-margin-top:10px;
-line-height:1.55
-}}
-
-.effect b{{
-display:block;
-margin-bottom:5px
-}}
-
-.effect span{{
-color:var(--muted)
-}}
-
-.alert{{
-margin-top:14px;
-background:#3b2d16;
-border:1px solid #6d5325;
-color:#ffe2a3;
-padding:12px;
-border-radius:10px;
-line-height:1.55
-}}
-
-.mapa{{
-display:block;
-width:100%;
-max-height:720px;
-object-fit:contain;
-background:#fff;
-border-radius:12px;
-border:1px solid var(--line)
-}}
-
-.map-note{{
-margin-top:8px;
-font-size:12px;
-color:var(--muted)
-}}
-
-.table-wrap{{
-overflow-x:auto
-}}
-
-table{{
-width:100%;
-border-collapse:collapse;
-font-size:13px
-}}
-
-th,td{{
-padding:11px;
-border-bottom:1px solid var(--line);
-text-align:left;
-vertical-align:top
-}}
-
-th{{
-color:#bcd3e7;
-background:#0d1d2c
-}}
-
-td{{
-color:#dce9f5
-}}
-
-.footer{{
-margin-top:14px;
-display:flex;
-justify-content:space-between;
-gap:12px;
-flex-wrap:wrap;
-color:var(--muted);
-font-size:12px
-}}
-
-.btn{{
-display:inline-block;
-background:#1c75bc;
-color:white;
-text-decoration:none;
-padding:10px 14px;
-border-radius:9px;
-font-weight:700
-}}
-
-.source{{
-margin-top:14px;
-padding:10px 12px;
-border-left:3px solid var(--accent);
-background:#0d1d2c;
-color:var(--muted);
-font-size:12px;
-line-height:1.5
-}}
-
-@media(max-width:1000px){{
-
-.grid{{
-grid-template-columns:repeat(3,1fr)
-}}
-
-.two{{
-grid-template-columns:1fr
-}}
-
-}}
-
-@media(max-width:520px){{
-
-.grid{{
-grid-template-columns:1fr
-}}
-
-.wrap{{
-padding:12px
-}}
-
-}}
-
-</style>
-
-</head>
-
-
-<body>
-
-<main class="wrap">
-
-
-<div class="top">
-
-<div>
-
-<h1>
-Seguimiento del Ciclón Tropical Polo
-</h1>
-
-<div class="sub">
-Servicio Meteorológico Nacional ·
-CONAGUA · Pacífico mexicano
-</div>
-
-</div>
-
-<div class="badge">
-● SEGUIMIENTO ACTIVO ·
-AVISO {escapar(d["aviso"])}
-</div>
-
-</div>
-
-
-<section class="grid">
-
-<div class="card">
-<small>Clasificación</small>
-<div class="big">
-{escapar(d["clasificacion"])}
-</div>
-</div>
-
-<div class="card">
-<small>Posición</small>
-<div class="big">
-{escapar(d["lat"])}° N ·
-{escapar(d["lon"])}° O
-</div>
-</div>
-
-<div class="card">
-<small>Viento sostenido</small>
-<div class="big">
-{d["viento"]} km/h
-</div>
-</div>
-
-<div class="card">
-<small>Rachas</small>
-<div class="big">
-{d["racha"]} km/h
-</div>
-</div>
-
-<div class="card">
-<small>Movimiento</small>
-<div class="big">
-{escapar(d["movimiento"])}
-</div>
-</div>
-
-<div class="card">
-<small>Presión mínima</small>
-<div class="big">
-{escapar(d["presion"])}
-</div>
-</div>
-
-</section>
-
-
-<div class="two">
-
-
-<section class="panel">
-
-<h2>Situación actual</h2>
-
-<div class="effect">
-<b>Referencia</b>
-<span>
-{escapar(d["referencia"])}
-</span>
-</div>
-
-<div class="effect">
-<b>Coordenadas</b>
-<span>
-{escapar(d["lat"])}° N ·
-{escapar(d["lon"])}° O
-</span>
-</div>
-
-<div class="alert">
-<b>Zona de prevención / vigilancia</b>
-<br>
-{escapar(d["vigilancia"])}
-</div>
-
-</section>
-
-
-<section class="panel">
-
-<h2>
-Efectos confirmados por SMN/CONAGUA
-</h2>
-
-<div class="effect">
-<b>Lluvias</b>
-<span>
-{escapar(d["lluvia"])}
-</span>
-</div>
-
-<div class="effect">
-<b>Viento en costas</b>
-<span>
-{escapar(d["viento_costero"])}
-</span>
-</div>
-
-<div class="effect">
-<b>Oleaje</b>
-<span>
-{escapar(d["oleaje"])}
-</span>
-</div>
-
-</section>
-
-</div>
-
-
-<section
-class="panel"
-style="margin-top:14px">
-
-<h2>
-Trayectoria pronóstico — SMN/CONAGUA
-</h2>
-
-{mapa_html}
-
-</section>
-
-
-<section
-class="panel"
-style="margin-top:14px">
-
-<h2>
-Pronóstico oficial de trayectoria
-</h2>
-
-{tabla_html}
-
-</section>
-
-
-<section
-class="panel"
-style="margin-top:14px">
-
-<h2>
-Datos del aviso oficial
-</h2>
-
-<div class="effect">
-<b>Aviso SMN/CONAGUA</b>
-<span>
-No. {escapar(d["aviso"])}
-</span>
-</div>
-
-<div class="effect">
-<b>Fecha y hora</b>
-<span>
-{escapar(d["fecha"])} ·
-{escapar(d["hora"])} horas
-({escapar(d["gmt"])} horas GMT)
-</span>
-</div>
-
-<div class="source">
-
-Fuente exclusiva:
-Servicio Meteorológico Nacional /
-Comisión Nacional del Agua.
-
-<br>
-
-Los datos que no pueden confirmarse
-inequívocamente se muestran como
-<strong>No confirmado</strong>.
-
-<br>
-
-No se utilizan datos del NHC
-ni de fuentes secundarias.
-
-</div>
-
-</section>
-
-
-<div class="footer">
-
-<div>
-
-<b>Corte mostrado:</b>
-{escapar(d["fecha"])} ·
-{escapar(d["hora"])} horas.
-
-<br>
-
-Actualización automática
-mediante GitHub Actions.
-
-</div>
-
-<a
-class="btn"
-href="{URL}"
-target="_blank"
-rel="noopener">
-
-Abrir aviso oficial SMN ↗
-
-</a>
-
-</div>
-
-
-</main>
-
-</body>
-
-</html>
-"""
-
-
-# ============================================================
-# EVITAR RETROCESOS
-# ============================================================
-
-def obtener_corte_html_actual():
-
-    if not INDEX.exists():
+def construir_salida(datos, mapa, pronostico):
+    return {
+        "ciclon": "Polo",
+        "fuente": "SMN / CONAGUA",
+        "url_oficial": URL,
+        "aviso": datos.get("aviso"),
+        "fecha": datos.get("fecha", "No confirmado"),
+        "hora": datos.get("hora", "No confirmado"),
+        "gmt": datos.get("gmt", "No confirmado"),
+        "clasificacion": datos.get("clasificacion", "No confirmado"),
+        "lat": datos.get("lat", "No confirmado"),
+        "lon": datos.get("lon", "No confirmado"),
+        "referencia": datos.get("referencia", "No confirmado"),
+        "viento": datos.get("viento", "No confirmado"),
+        "racha": datos.get("racha", "No confirmado"),
+        "movimiento": datos.get("movimiento", "No confirmado"),
+        "presion": datos.get("presion", "No confirmado"),
+        "lluvia": datos.get("lluvia", "No confirmado"),
+        "vigilancia": datos.get("vigilancia", "No confirmado"),
+        "viento_costero": datos.get("viento_costero", "No confirmado"),
+        "oleaje": datos.get("oleaje", "No confirmado"),
+        "mapa": mapa or "No confirmado",
+        "pronostico": pronostico,
+    }
+
+
+def obtener_corte_json_actual():
+    if not DATOS.exists():
         return None
-
-    contenido = INDEX.read_text(
-        encoding="utf-8"
-    )
-
-    m = re.search(
-        r"Corte\s+mostrado:</b>\s*"
-        r"(20\d{2}-\d{2}-\d{2})"
-        r"\s*·\s*"
-        r"(\d{2}:\d{2})\s+horas",
-        contenido,
-        re.IGNORECASE
-    )
-
-    if not m:
-        return None
-
     try:
-        return datetime.strptime(
-            f"{m.group(1)} {m.group(2)}",
-            "%Y-%m-%d %H:%M"
-        )
-
+        actual = json.loads(DATOS.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    fecha = actual.get("fecha")
+    hora = actual.get("hora")
+    if not fecha or fecha == "No confirmado" or not hora:
+        return None
+    try:
+        return datetime.strptime(f"{fecha} {hora}", "%Y-%m-%d %H:%M")
     except ValueError:
         return None
 
 
 # ============================================================
-# ACTUALIZAR
+# ACTUALIZAR SOLO DATOS (NO TOCA index.html)
 # ============================================================
 
 def actualizar():
-
     texto, soup = obtener_smn()
-
-    datos = extraer_datos(
-        texto
-    )
-
-    validar_datos(
-        datos
-    )
-
-    mapa = extraer_mapa_trayectoria(
-        soup
-    )
-
-    pronostico = extraer_pronostico(
-        soup
-    )
+    datos = extraer_datos(texto)
+    validar_datos(datos)
+    mapa = extraer_mapa_trayectoria(soup)
+    pronostico = extraer_pronostico(soup)
 
     print()
     print("========================================")
     print(" DATOS VALIDADOS")
     print("========================================")
-
     for clave, valor in datos.items():
         print(f"{clave}: {valor}")
+    print("mapa:", mapa or "No confirmado")
+    print("filas pronóstico:", len(pronostico))
 
-    print(
-        "mapa:",
-        mapa or "No confirmado"
-    )
-
-    print(
-        "filas pronóstico:",
-        len(pronostico)
-    )
-
-    # --------------------------------------------------------
-    # EVITAR RETROCESO
-    # --------------------------------------------------------
-
-    nuevo_corte = datetime.strptime(
-        f"{datos['fecha']} {datos['hora']}",
-        "%Y-%m-%d %H:%M"
-    )
-
-    corte_actual = obtener_corte_html_actual()
-
-    if (
-        corte_actual is not None
-        and nuevo_corte < corte_actual
-    ):
-        raise RuntimeError(
-            "El aviso recuperado es anterior "
-            "al publicado."
-        )
-
-    nuevo_html = generar_html(
-        datos,
-        mapa,
-        pronostico
-    )
-
-    # --------------------------------------------------------
-    # SIN CAMBIOS
-    # --------------------------------------------------------
-
-    if INDEX.exists():
-
-        actual = INDEX.read_text(
-            encoding="utf-8"
-        )
-
-        if actual == nuevo_html:
-
-            print()
-            print(
-                "No existen cambios respecto "
-                "al dashboard publicado."
+    # Evitar retroceso solamente cuando la fecha nueva está confirmada.
+    fecha_nueva = datos.get("fecha")
+    nuevo_corte = None
+    if fecha_nueva and fecha_nueva != "No confirmado":
+        try:
+            nuevo_corte = datetime.strptime(
+                f"{fecha_nueva} {datos['hora']}", "%Y-%m-%d %H:%M"
             )
+        except ValueError:
+            nuevo_corte = None
 
-            return
+    corte_actual = obtener_corte_json_actual()
+    if nuevo_corte is not None and corte_actual is not None and nuevo_corte < corte_actual:
+        raise RuntimeError("El aviso recuperado es anterior al publicado.")
 
-    # --------------------------------------------------------
-    # ESCRITURA ATÓMICA
-    # --------------------------------------------------------
+    salida = construir_salida(datos, mapa, pronostico)
+    nuevo_json = json.dumps(salida, ensure_ascii=False, indent=2) + "\n"
 
-    temporal = Path(
-        "index.html.tmp"
-    )
+    if DATOS.exists() and DATOS.read_text(encoding="utf-8") == nuevo_json:
+        print("No existen cambios respecto a datos_polo.json publicado.")
+        return
 
-    temporal.write_text(
-        nuevo_html,
-        encoding="utf-8"
-    )
-
-    temporal.replace(
-        INDEX
-    )
-
-    print()
-    print(
-        f"index.html actualizado con "
-        f"Aviso No. {datos['aviso']}."
-    )
+    temporal = Path("datos_polo.json.tmp")
+    temporal.write_text(nuevo_json, encoding="utf-8")
+    temporal.replace(DATOS)
+    print(f"datos_polo.json actualizado con Aviso No. {datos['aviso']}.")
+    print("index.html permanece intacto: el diseño institucional no se sobrescribe.")
 
 
 # ============================================================
@@ -1642,10 +998,10 @@ def main():
 
     print()
     print("========================================")
-    print(" ACTUALIZADOR CICLÓN POLO V4.3")
+    print(" ACTUALIZADOR CICLÓN POLO V5.0")
     print(" Fuente exclusiva: SMN / CONAGUA")
     print(f" URL específica de Polo: {URL}")
-    print(" Mapa + tabla de trayectoria automática")
+    print(" Datos JSON + mapa + trayectoria automática")
     print("========================================")
 
     actualizar()
@@ -1668,7 +1024,7 @@ if __name__ == "__main__":
         )
 
         print(
-            "Por seguridad index.html permanece "
+            "Por seguridad datos_polo.json permanece "
             "sin modificaciones.",
             file=sys.stderr
         )
