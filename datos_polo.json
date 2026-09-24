@@ -4,86 +4,86 @@
   "url_oficial": "https://smn.conagua.gob.mx/tools/GUI/PortalLaravel/public/historicos/pdf/10829/30",
   "aviso": 30,
   "fecha": "2026-09-24",
-  "hora_publicacion": "00:10",
-  "hora": "00:10",
-  "gmt": "No confirmado",
+  "hora_publicacion": "00:00",
+  "hora": "00:00",
+  "gmt": "06:00",
   "lat": "16.4",
   "lon": "103.0",
-  "referencia": "No confirmado",
-  "movimiento": "No confirmado",
+  "referencia": "A 205 km al suroeste de Zihuatanejo, Gro., y a 320 km al sur-sureste de Manzanillo, Col.",
+  "movimiento": "PARALELO A LAS COSTAS DE GUERRERO Y MICHOACÁN Imagen de satélite SITUACIÓN ACTUAL La amplia circulación del huracán Polo de categoría 5 en la escala Saffir-Simpson mantiene la probabilidad de lluvias muy fuertes a puntuales torrenciales en estados del occidente y sur del país. A su vez, se prevén vientos fuertes y oleaje elevado en sus costas. CONDICIONES ACTUALES Hora local (GMT) 00:00 horas (06:00 horas GMT) Ubicación del centro Latitud Norte: 16.4 Longitud Oeste: 103.0 Distancia A 205 km al suroeste de Zihuatanejo, Gro., y a 320 km al sur-sureste de Manzanillo, Col. CONDICIONES ACTUALES Desplazamiento Hacia el noroeste (310°) a 11 km/h",
   "viento": 260,
   "racha": 315,
-  "presion": "No confirmado",
+  "presion": "923 hPa",
   "clasificacion": "Huracán categoría 5",
-  "lluvia": "No confirmado",
+  "lluvia": "La amplia circulación del huracán Polo de categoría 5 en la escala Saffir-Simpson mantiene la probabilidad de lluvias muy fuertes a puntuales torrenciales en estados del occidente y sur del país. A su vez, se prevén vientos fuertes y oleaje elevado en sus costas.",
   "vigilancia": "No confirmado",
-  "viento_costero": "No confirmado",
-  "oleaje": "No confirmado",
-  "mapa": "https://smn.conagua.gob.mx/tools/GUI/PortalLaravel/public/WebImg/ImgTray1790198354.jpg",
+  "viento_costero": "Vientos fuertes en costas; el aviso no cuantifica el rango en el texto extraído.",
+  "oleaje": "Oleaje elevado en costas; el aviso no cuantifica la altura en el texto extraído.",
+  "mapa": "https://smn.conagua.gob.mx/tools/GUI/PortalLaravel/public/WebImg/ImgTray1790230246.jpg",
   "pronostico": [
     {
-      "dia_hora": "24/00h",
-      "lat": "16.2",
-      "lon": "103.4",
-      "viento": "240/295",
-      "categoria": "Huracán categoría 4",
-      "ubicacion": "230 km al suroeste de Lázaro Cárdenas, Mich."
+      "dia_hora": "24/06h",
+      "lat": "16.5",
+      "lon": "103.7",
+      "viento": "280/345",
+      "categoria": "Huracán categoría 5",
+      "ubicacion": "A 205 km al sur de Punta San Telmo Mich."
     },
     {
-      "dia_hora": "24/12h",
-      "lat": "16.7",
-      "lon": "105.0",
-      "viento": "250/305",
-      "categoria": "Huracán categoría 4",
-      "ubicacion": "245 km al suroeste de Punta San Telmo, Mich."
-    },
-    {
-      "dia_hora": "25/00h",
+      "dia_hora": "24/18h",
       "lat": "16.9",
-      "lon": "106.9",
+      "lon": "105.6",
+      "viento": "270/325",
+      "categoria": "Huracán categoría 5",
+      "ubicacion": "A 275 km al sur-suroeste de Manzanillo Col."
+    },
+    {
+      "dia_hora": "25/06h",
+      "lat": "17.1",
+      "lon": "107.5",
+      "viento": "260/315",
+      "categoria": "Huracán categoría 5",
+      "ubicacion": "A 370 km al suroeste de Playa Perula Jal."
+    },
+    {
+      "dia_hora": "25/18h",
+      "lat": "17.3",
+      "lon": "109.4",
       "viento": "250/305",
       "categoria": "Huracán categoría 4",
-      "ubicacion": "350 km al sur-suroeste de Playa Pérula, Jal."
+      "ubicacion": "A 515 km al oeste-suroeste de Playa Perula Jal."
     },
     {
-      "dia_hora": "25/12h",
-      "lat": "17.2",
-      "lon": "108.9",
+      "dia_hora": "26/06h",
+      "lat": "17.9",
+      "lon": "111.0",
       "viento": "240/295",
       "categoria": "Huracán categoría 4",
-      "ubicacion": "475 km al oeste-suroeste de Playa Pérula, Jal."
+      "ubicacion": "A 560 km al sur de Cabo San Lucas BCS."
     },
     {
-      "dia_hora": "26/00h",
-      "lat": "17.7",
-      "lon": "110.6",
-      "viento": "230/280",
+      "dia_hora": "26/18h",
+      "lat": "19.2",
+      "lon": "112.2",
+      "viento": "215/260",
       "categoria": "Huracán categoría 4",
-      "ubicacion": "575 km al sur de Cabo San Lucas, B.C.S."
+      "ubicacion": "A 470 km al sur-suroeste de Cabo San Lucas BCS."
     },
     {
-      "dia_hora": "26/12h",
-      "lat": "18.9",
-      "lon": "112.0",
-      "viento": "220/270",
-      "categoria": "Huracán categoría 4",
-      "ubicacion": "490 km al sur-suroeste de Cabo San Lucas, B.C.S."
-    },
-    {
-      "dia_hora": "27/12h",
-      "lat": "22.2",
-      "lon": "113.4",
-      "viento": "195/240",
+      "dia_hora": "17/18h",
+      "lat": "22.5",
+      "lon": "113.3",
+      "viento": "185/220",
       "categoria": "Huracán categoría 3",
-      "ubicacion": "365 km al oeste-suroeste de Cabo San Lucas, B.C.S."
+      "ubicacion": "A 350 km al oeste de Cabo San Lucas BCS."
     },
     {
-      "dia_hora": "28/12h",
-      "lat": "24.3",
-      "lon": "113.4",
-      "viento": "165/205",
-      "categoria": "Huracán categoría 2",
-      "ubicacion": "125 km al oeste-suroeste de Cabo San Lázaro, B.C.S."
+      "dia_hora": "28/18",
+      "lat": "25.5",
+      "lon": "113.0",
+      "viento": "150/185",
+      "categoria": "Huracán categoría 1",
+      "ubicacion": "A 110 km al noroeste de Cabo San Lázaro, BCS."
     }
   ]
 }
