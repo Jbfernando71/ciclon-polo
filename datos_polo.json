@@ -16,8 +16,8 @@
   "presion": "932 hPa",
   "lluvia": "Su amplia circulación refuerza la probabilidad de lluvias puntuales torrenciales (150 a 250 mm) en Michoacán (costa y este) y Guerrero (costa y oeste); lluvias puntuales intensas (75 a 150 mm) en Colima; así como lluvias muy fuertes (50 a 75 mm) en Jalisco (sur) y Oaxaca (oeste).",
   "vigilancia": "Se mantiene zona de prevención por efectos de vientos de tormenta tropical desde Técpan de Galeana, Gro., hasta Punta San Telmo, Mich., y zona de vigilancia por efectos de vientos de tormenta tropical desde el oeste de Punta San Telmo, Mich., hasta Playa Pérula, Jal.",
-  "viento_costero": "Se prevén rachas de viento de 70 a 90 km/h; además, viento de 20 a 30 km/h con rachas de 40 a 60 km/h en Jalisco y Oaxaca.",
-  "oleaje": "Oleaje de 6.0 a 8.0 metros de altura en costas de Colima, Michoacán y Guerrero; así como oleaje de 2.0 a 3.0 metros de altura en costas de Jalisco y Oaxaca. Condiciones que disminuirán gradualmente en Oaxaca.",
+  "viento_costero": "Se prevén rachas de viento de 70 a 90 km/h",
+  "oleaje": "oleaje de 6.0 a 8.0 metros de altura en costas de Colima, Michoacán y Guerrero; viento de 20 a 30 km/h con rachas de 40 a 60 km/h en Jalisco y Oaxaca; así como oleaje de 2.0 a 3.0 metros de altura en costas de Jalisco y Oaxaca. Condiciones que disminuirán gradualmente en Oaxaca.",
   "mapa": "https://smn.conagua.gob.mx/tools/GUI/PortalLaravel/public/WebImg/ImgTray1790198354.jpg",
   "pronostico": [
     {
