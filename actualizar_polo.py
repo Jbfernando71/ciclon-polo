@@ -1,202 +1,202 @@
 import json
 import re
 import sys
+from io import BytesIO
 from pathlib import Path
 from urllib.parse import urljoin
 
 import requests
 from bs4 import BeautifulSoup
+from pypdf import PdfReader
 
 # ============================================================
-# ACTUALIZADOR CICLÓN POLO V5.8
+# ACTUALIZADOR CICLÓN POLO V5.9
 # Fuente exclusiva: SMN / CONAGUA
-# Actualiza SOLO datos_polo.json. NO modifica index.html.
+# El PDF oficial es la fuente de los datos meteorológicos.
+# WebAviso se usa únicamente para localizar la imagen oficial.
+# NO modifica index.html.
 # ============================================================
 
 BASE = "https://smn.conagua.gob.mx"
-URL_AVISO = f"{BASE}/tools/GUI/PortalLaravel/public/WebAviso"
+HISTORICO_ID = "10790"
+URL_HISTORICO = f"{BASE}/tools/GUI/PortalLaravel/public/historicos/{HISTORICO_ID}"
+URL_WEBAVISO = f"{BASE}/tools/GUI/PortalLaravel/public/WebAviso"
 DATOS = Path("datos_polo.json")
 
 HEADERS = {
-    "User-Agent": (
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-        "AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/153.0.0.0 Safari/537.36"
-    ),
+    "User-Agent": "Mozilla/5.0",
     "Accept-Language": "es-MX,es;q=0.9",
     "Cache-Control": "no-cache",
 }
 
-def limpio(s):
+def limpiar(s):
     return re.sub(r"\s+", " ", s or "").strip()
 
-def descargar():
-    r = requests.get(URL_AVISO, headers=HEADERS, timeout=45)
+def get(url, timeout=45):
+    r = requests.get(url, headers=HEADERS, timeout=timeout)
     r.raise_for_status()
-    soup = BeautifulSoup(r.text, "html.parser")
-    texto = limpio(soup.get_text(" ", strip=True))
-    if not re.search(r"\bPolo\b", texto, re.I):
-        raise RuntimeError("No se pudo confirmar a Polo en WebAviso.")
-    return soup, texto
+    return r
 
-def entre(texto, inicio, fin):
-    p = rf"{inicio}\s*(.+?)(?=\s*{fin})"
-    m = re.search(p, texto, re.I | re.S)
-    return limpio(m.group(1)) if m else "No confirmado"
+def ultimo_aviso():
+    soup = BeautifulSoup(get(URL_HISTORICO).text, "html.parser")
+    candidatos = []
 
-def mapa_actual(soup):
-    # La imagen oficial de trayectoria del SMN usa WebImg/ImgTray...
-    for img in soup.find_all("img", src=True):
-        src = urljoin(URL_AVISO, img.get("src", ""))
-        alt = limpio(img.get("alt", ""))
-        if "ImgTray" in src or re.search(r"Trayectoria\s+pron[oó]stico", alt, re.I):
-            return src
-    return ""
-
-def pronostico_actual(soup):
-    # Primero intenta leer la tabla HTML de pronóstico.
-    for tabla in soup.find_all("table"):
-        txt = limpio(tabla.get_text(" ", strip=True))
-        if not (re.search(r"D[ií]a/Hora", txt, re.I)
-                and re.search(r"Vientos", txt, re.I)
-                and re.search(r"Categor[ií]a", txt, re.I)):
+    for tr in soup.find_all("tr"):
+        c = [limpiar(x.get_text(" ", strip=True)) for x in tr.find_all(["td", "th"])]
+        if len(c) < 3 or not re.search(r"\bPolo\b", " ".join(c), re.I):
             continue
 
-        filas = []
-        for tr in tabla.find_all("tr"):
-            c = [limpio(x.get_text(" ", strip=True))
-                 for x in tr.find_all(["th", "td"])]
-            if len(c) < 6 or not re.fullmatch(r"\d{1,2}/\d{1,2}h?", c[0]):
-                continue
-            filas.append({
-                "dia_hora": c[0],
-                "lat": c[1],
-                "lon": c[2],
-                "viento": c[3],
-                "categoria": c[4],
-                "ubicacion": c[5],
+        aviso = None
+        fecha = None
+        for x in c:
+            if aviso is None and re.fullmatch(r"\d{1,3}", x):
+                aviso = int(x)
+            if fecha is None:
+                m = re.search(r"(20\d{2}-\d{2}-\d{2})\s+(\d{1,2}:\d{2})", x)
+                if m:
+                    fecha = (m.group(1), m.group(2))
+
+        a = tr.find("a", href=re.compile(r"/historicos/pdf/\d+/\d+"))
+        if aviso and a:
+            candidatos.append({
+                "aviso": aviso,
+                "fecha_tabla": fecha,
+                "pdf": urljoin(URL_HISTORICO, a["href"])
             })
-        if filas:
-            return filas
-    return []
+
+    if not candidatos:
+        raise RuntimeError("No se localizaron avisos oficiales de Polo.")
+
+    return max(candidatos, key=lambda x: x["aviso"])
+
+def texto_pdf(url):
+    r = get(url)
+    reader = PdfReader(BytesIO(r.content))
+    paginas = [(p.extract_text() or "") for p in reader.pages]
+    return paginas, limpiar("\n".join(paginas))
+
+def extraer_pronostico(texto):
+    bloque = re.search(
+        r"PRON[ÓO]STICO\s+D[ií]a/Hora.*?Ubicaci[oó]n\s+(.+?)"
+        r"(?=\s+TRAYECTORIA\s+PRON[ÓO]STICO)",
+        texto, re.I | re.S
+    )
+    if not bloque:
+        return []
+
+    b = limpiar(bloque.group(1))
+    patron = re.compile(
+        r"(\d{1,2}/\d{1,2}h?)\s+"
+        r"(\d{1,2}(?:\.\d+)?)\s+"
+        r"(\d{2,3}(?:\.\d+)?)\s+"
+        r"(\d{2,3}/\d{2,3})\s+"
+        r"(Hurac[aá]n\s+categor[ií]a\s+[1-5]|Tormenta\s+tropical|Depresi[oó]n\s+tropical)\s+"
+        r"(.+?)(?=\s+\d{1,2}/\d{1,2}h?\s+\d{1,2}(?:\.\d+)?\s+\d{2,3}(?:\.\d+)?\s+\d{2,3}/\d{2,3}|\s*$)",
+        re.I | re.S
+    )
+
+    filas = []
+    for m in patron.finditer(b):
+        filas.append({
+            "dia_hora": m.group(1),
+            "lat": m.group(2),
+            "lon": m.group(3),
+            "viento": m.group(4),
+            "categoria": limpiar(m.group(5)),
+            "ubicacion": limpiar(m.group(6)),
+        })
+    return filas
+
+def mapa_webaviso():
+    try:
+        soup = BeautifulSoup(get(URL_WEBAVISO).text, "html.parser")
+        for img in soup.find_all("img", src=True):
+            src = urljoin(URL_WEBAVISO, img["src"])
+            alt = limpiar(img.get("alt", ""))
+            if "ImgTray" in src or re.search(r"trayectoria\s+pron[oó]stico", alt, re.I):
+                return src
+    except Exception as e:
+        print("ADVERTENCIA mapa:", e)
+    return ""
 
 def main():
-    print("=" * 66)
-    print(" ACTUALIZADOR CICLÓN POLO V5.8")
+    print("=" * 68)
+    print(" ACTUALIZADOR CICLÓN POLO V5.9")
     print(" FUENTE EXCLUSIVA: SMN / CONAGUA")
-    print("=" * 66)
+    print("=" * 68)
 
-    soup, t = descargar()
+    meta = ultimo_aviso()
+    aviso = meta["aviso"]
+    print("Aviso localizado:", aviso)
+    print("PDF:", meta["pdf"])
 
-    # Aviso
-    m = re.search(r"Oc[eé]ano\s+Pac[ií]fico\s*-\s*No\.\s*Aviso:\s*(\d+)", t, re.I)
+    paginas, t = texto_pdf(meta["pdf"])
+
+    # Datos que el diagnóstico confirmó en el PDF oficial.
+    m = re.search(r"Emisi[oó]n:\s*(20\d{2}-\d{2}-\d{2})\s+(\d{1,2}:\d{2}):\d{2}", t, re.I)
     if not m:
-        raise RuntimeError("No se encontró el número de aviso.")
-    aviso = int(m.group(1))
+        raise RuntimeError("No se encontró fecha/hora de emisión.")
+    fecha, hora_emision = m.group(1), m.group(2)
 
-    # Clasificación
+    m = re.search(r"Hora\s+local\s*\(GMT\)\s*(\d{1,2}:\d{2})\s+horas?\s*\((\d{1,2}:\d{2})\s+horas?\s+GMT\)", t, re.I)
+    if not m:
+        raise RuntimeError("No se encontró hora local/GMT.")
+    hora, gmt = m.group(1), m.group(2)
+
+    m = re.search(r"Ubicaci[oó]n\s+del\s+centro\s+Latitud\s+Norte:\s*(\d+(?:\.\d+)?)\s+Longitud\s+Oeste:\s*(\d+(?:\.\d+)?)", t, re.I)
+    if not m:
+        raise RuntimeError("No se encontraron coordenadas.")
+    lat, lon = m.group(1), m.group(2)
+
+    m = re.search(r"Distancia\s+(.+?)(?=\s+CONDICIONES\s+ACTUALES\s+Desplazamiento)", t, re.I | re.S)
+    referencia = limpiar(m.group(1)) if m else "No confirmado"
+
+    m = re.search(r"Desplazamiento\s+(.+?)(?=\s+Vientos\s+m[aá]x)", t, re.I | re.S)
+    movimiento = limpiar(m.group(1)) if m else "No confirmado"
+
+    m = re.search(r"Vientos\s+m[aá]x\s*\[km/h\]\s*Sostenidos:\s*(\d{2,3})\s+Rachas:\s*(\d{2,3})", t, re.I)
+    if not m:
+        raise RuntimeError("No se encontraron viento/rachas.")
+    viento, racha = int(m.group(1)), int(m.group(2))
+
+    m = re.search(r"Presi[oó]n\s+m[ií]nima\s*\[hPa\]\s*(\d{3,4})", t, re.I)
+    presion = f"{m.group(1)} hPa" if m else "No confirmado"
+
     m = re.search(r"HURAC[AÁ]N\s+POLO\s+DE\s+CATEGOR[IÍ]A\s+([1-5])", t, re.I)
     if m:
         clasificacion = f"Huracán categoría {m.group(1)}"
     elif re.search(r"TORMENTA\s+TROPICAL\s+POLO", t, re.I):
         clasificacion = "Tormenta tropical"
-    elif re.search(r"DEPRESI[ÓO]N\s+TROPICAL\s+POLO", t, re.I):
-        clasificacion = "Depresión tropical"
     else:
         clasificacion = "No confirmado"
 
-    # Hora local / GMT
-    m = re.search(
-        r"Hora\s+local\s*\(hora\s+GMT\)\s*\|?\s*"
-        r"(\d{1,2}:\d{2})\s*horas?\s*"
-        r"\((\d{1,2}:\d{2})\s*horas?\s*GMT\)",
-        t, re.I
-    )
-    hora = m.group(1) if m else "No confirmado"
-    gmt = m.group(2) if m else "No confirmado"
+    # El PDF diagnóstico no contiene apartados titulados "Pronóstico de lluvia",
+    # "Zona de vigilancia" o "Comentarios adicionales". Se usa únicamente lo
+    # que sí publica el aviso, sin inventar ni reutilizar datos viejos.
+    m = re.search(r"SITUACI[ÓO]N\s+ACTUAL\s+(.+?)(?=\s+CONDICIONES\s+ACTUALES)", t, re.I | re.S)
+    situacion = limpiar(m.group(1)) if m else "No confirmado"
 
-    # Coordenadas
-    m = re.search(
-        r"Ubicaci[oó]n\s+del\s+centro\s*\|?\s*"
-        r"Latitud\s+Norte:\s*(\d{1,2}(?:\.\d+)?)\s*\|?\s*"
-        r"Longitud\s+Oeste:\s*(\d{2,3}(?:\.\d+)?)",
-        t, re.I
-    )
-    lat = m.group(1) if m else "No confirmado"
-    lon = m.group(2) if m else "No confirmado"
+    lluvia = situacion if re.search(r"lluvias?", situacion, re.I) else "No confirmado"
 
-    referencia = entre(t,
-        r"Distancia\s+al\s+lugar\s+m[aá]s\s+cercano\s*\|?",
-        r"Desplazamiento\s+actual")
+    # No aparecen zonas específicas de prevención/vigilancia en el PDF
+    # diagnosticado; por seguridad queda explícito como no confirmado.
+    vigilancia = "No confirmado"
 
-    movimiento = entre(t,
-        r"Desplazamiento\s+actual\s*\|?",
-        r"Vientos\s+m[aá]ximos")
+    # El aviso sí indica de forma general vientos fuertes y oleaje elevado,
+    # pero no cuantifica rangos costeros en el texto extraído.
+    viento_costero = "Vientos fuertes en costas (sin rango cuantificado en el aviso)" if re.search(r"vientos?\s+fuertes", situacion, re.I) else "No confirmado"
+    oleaje = "Oleaje elevado en costas (sin altura cuantificada en el aviso)" if re.search(r"oleaje\s+elevado", situacion, re.I) else "No confirmado"
 
-    # Viento y rachas
-    m = re.search(
-        r"Vientos\s+m[aá]ximos\s*\[km/h\]\s*\|?\s*"
-        r"Sostenidos:\s*(\d{2,3})\s*\|?\s*Rachas:\s*(\d{2,3})",
-        t, re.I
-    )
-    viento = int(m.group(1)) if m else "No confirmado"
-    racha = int(m.group(2)) if m else "No confirmado"
+    pronostico = extraer_pronostico(t)
+    if not pronostico:
+        raise RuntimeError("No se pudo extraer la tabla de pronóstico del PDF vigente.")
 
-    # Presión
-    m = re.search(
-        r"Presi[oó]n\s+m[ií]nima\s+central\s*\[hpa\]\s*\|?\s*(\d{3,4})",
-        t, re.I
-    )
-    presion = f"{m.group(1)} hPa" if m else "No confirmado"
-
-    lluvia = entre(t,
-        r"Pron[oó]stico\s+de\s+lluvia\s*\|?",
-        r"Zona\s+de\s+vigilancia")
-
-    vigilancia = entre(t,
-        r"Zona\s+de\s+vigilancia\s*\|?",
-        r"Comentarios\s+adicionales")
-
-    comentarios = entre(t,
-        r"Comentarios\s+adicionales\s*\|?",
-        r"Recomendaciones")
-
-    # Viento costero: conserva el comentario oficial completo para no perder estados/rangos.
-    viento_costero = comentarios if comentarios != "No confirmado" else "No confirmado"
-
-    # Extrae todas las frases de oleaje del comentario.
-    oleajes = re.findall(
-        r"oleaje\s+de\s+\d+(?:\.\d+)?\s+a\s+\d+(?:\.\d+)?\s+metros?"
-        r"(?:\s+de\s+altura)?\s+en\s+costas\s+de\s+[^.;]+",
-        comentarios, re.I
-    )
-    oleaje = "; ".join(limpio(x) for x in oleajes) if oleajes else "No confirmado"
-
-    # Fecha: se obtiene de la fila del mismo aviso en el historial.
-    fecha = "No confirmado"
-    hora_hist = None
-    gmt_hist = None
-    patron = (
-        rf"(?:^|\s){aviso}\s*\|?\s*"
-        rf"(20\d{{2}}-\d{{2}}-\d{{2}})\s+"
-        rf"(\d{{1,2}}:\d{{2}})\s*horas?\s*"
-        rf"\((\d{{1,2}}:\d{{2}})\s*horas?\s*GMT"
-    )
-    mh = re.search(patron, t, re.I)
-    if mh:
-        fecha, hora_hist, gmt_hist = mh.group(1), mh.group(2), mh.group(3)
-        if hora == "No confirmado":
-            hora = hora_hist
-        if gmt == "No confirmado":
-            gmt = gmt_hist
-
-    pronostico = pronostico_actual(soup)
-    mapa = mapa_actual(soup)
+    mapa = mapa_webaviso()
 
     d = {
         "ciclon": "Polo",
         "fuente": "SMN / CONAGUA",
-        "url_oficial": URL_AVISO,
+        "url_oficial": meta["pdf"],
         "aviso": aviso,
         "fecha": fecha,
         "hora_publicacion": hora,
@@ -214,55 +214,36 @@ def main():
         "vigilancia": vigilancia,
         "viento_costero": viento_costero,
         "oleaje": oleaje,
+        # Nunca reutilizar mapa o pronóstico de un aviso anterior.
         "mapa": mapa,
         "pronostico": pronostico,
     }
 
-    # Validaciones para impedir mezclar avisos o publicar información incompleta.
-    esenciales = ["fecha", "hora", "gmt", "lat", "lon", "referencia",
-                  "movimiento", "viento", "racha", "presion",
-                  "clasificacion", "lluvia", "vigilancia"]
-    faltan = [x for x in esenciales if d[x] in ("", "No confirmado", None)]
+    esenciales = ["fecha","hora","gmt","lat","lon","referencia","movimiento",
+                  "viento","racha","presion","clasificacion"]
+    faltan = [k for k in esenciales if d[k] in ("", "No confirmado", None)]
     if faltan:
-        raise RuntimeError("Campos oficiales no extraídos: " + ", ".join(faltan))
+        raise RuntimeError("Campos esenciales no extraídos: " + ", ".join(faltan))
 
-    if not pronostico:
-        raise RuntimeError("No se pudo extraer el pronóstico del aviso vigente.")
-    if not mapa:
-        raise RuntimeError("No se pudo confirmar el mapa del aviso vigente.")
-    if int(racha) < int(viento):
-        raise RuntimeError("Racha menor que viento sostenido; se cancela actualización.")
+    if racha < viento:
+        raise RuntimeError("Validación fallida: racha menor que viento sostenido.")
 
-    # Evita retroceder de aviso.
-    if DATOS.exists():
-        try:
-            viejo = json.loads(DATOS.read_text(encoding="utf-8"))
-            viejo_aviso = int(viejo.get("aviso", 0))
-            if aviso < viejo_aviso:
-                raise RuntimeError(
-                    f"SMN devolvió aviso {aviso}, pero el dashboard ya tiene {viejo_aviso}."
-                )
-        except json.JSONDecodeError:
-            pass
-
-    salida = json.dumps(d, ensure_ascii=False, indent=2) + "\n"
     tmp = Path("datos_polo.json.tmp")
-    tmp.write_text(salida, encoding="utf-8")
+    tmp.write_text(json.dumps(d, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     tmp.replace(DATOS)
 
     print()
     print("ACTUALIZACIÓN CORRECTA")
     print("Aviso:", aviso)
-    print("Fecha:", fecha)
-    print("Hora local/GMT:", hora, "/", gmt)
+    print("Fecha/Hora:", fecha, hora, "GMT:", gmt)
     print("Clasificación:", clasificacion)
-    print("Coordenadas:", lat, "N /", lon, "O")
+    print("Posición:", lat, "N /", lon, "O")
     print("Referencia:", referencia)
     print("Movimiento:", movimiento)
     print("Viento/Rachas:", viento, "/", racha, "km/h")
     print("Presión:", presion)
     print("Pronóstico:", len(pronostico), "filas")
-    print("Mapa:", mapa)
+    print("Mapa:", mapa if mapa else "No confirmado")
     print("datos_polo.json actualizado.")
     print("index.html permanece intacto.")
 
