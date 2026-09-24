@@ -1,6 +1,4 @@
-from pathlib import Path
-
-code = r'''import requests
+import requests
 import re
 import sys
 import json
@@ -403,8 +401,3 @@ if __name__ == "__main__":
             file=sys.stderr
         )
         sys.exit(1)
-'''
-
-path = Path("/mnt/data/actualizar_polo_v5.3.py")
-path.write_text(code, encoding="utf-8")
-print(path)
