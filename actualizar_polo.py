@@ -437,91 +437,42 @@ def obtener_bloque_actual(texto, datos):
 # ============================================================
 
 def extraer_clasificacion(texto, datos):
+    """
+    Obtiene la clasificación EXCLUSIVAMENTE de una mención que
+    identifique a Polo por nombre. Esto evita confundir frases como
+    "vientos de tormenta tropical" de las zonas de vigilancia con
+    la clasificación actual del ciclón.
+    """
 
-    bloque = obtener_bloque_actual(
-        texto,
-        datos
-    )
-
-    patrones = [
-        r"(Hurac[aá]n\s+categor[ií]a\s+[1-5])",
-        r"(Tormenta\s+tropical)",
-        r"(Depresi[oó]n\s+tropical)",
+    patrones_polo = [
+        r"Hurac[aá]n\s+Polo\s+(?:de\s+)?categor[ií]a\s+([1-5])",
+        r"Polo\s+(?:como\s+)?hurac[aá]n\s+(?:de\s+)?categor[ií]a\s+([1-5])",
+        r"Tormenta\s+tropical\s+Polo\b",
+        r"Polo\s+(?:como\s+)?tormenta\s+tropical\b",
+        r"Depresi[oó]n\s+tropical\s+Polo\b",
+        r"Polo\s+(?:como\s+)?depresi[oó]n\s+tropical\b",
     ]
 
-    for patron in patrones:
+    # Se busca en todo el aviso específico de Polo, pero SOLO en
+    # expresiones donde el nombre Polo está unido a la clasificación.
+    for i, patron in enumerate(patrones_polo):
+        m = re.search(patron, texto, re.IGNORECASE)
+        if not m:
+            continue
+        if i in (0, 1):
+            return f"Huracán categoría {m.group(1)}"
+        if i in (2, 3):
+            return "Tormenta tropical"
+        return "Depresión tropical"
 
-        m = re.search(
-            patron,
-            bloque,
-            re.IGNORECASE
-        )
-
-        if m:
-
-            valor = limpiar(m.group(1))
-
-            categoria = re.search(
-                r"categor[ií]a\s+([1-5])",
-                valor,
-                re.IGNORECASE
-            )
-
-            if categoria:
-                return (
-                    "Huracán categoría "
-                    + categoria.group(1)
-                )
-
-            if re.search(
-                r"Tormenta",
-                valor,
-                re.IGNORECASE
-            ):
-                return "Tormenta tropical"
-
-            if re.search(
-                r"Depresi[oó]n",
-                valor,
-                re.IGNORECASE
-            ):
-                return "Depresión tropical"
-
-    contexto = aislar_polo(texto)
-
-    for patron in patrones:
-
-        coincidencias = list(
-            re.finditer(
-                patron,
-                contexto,
-                re.IGNORECASE
-            )
-        )
-
-        if coincidencias:
-
-            valor = limpiar(
-                coincidencias[-1].group(1)
-            )
-
-            categoria = re.search(
-                r"categor[ií]a\s+([1-5])",
-                valor,
-                re.IGNORECASE
-            )
-
-            if categoria:
-                return (
-                    "Huracán categoría "
-                    + categoria.group(1)
-                )
-
-            if "tormenta" in valor.lower():
-                return "Tormenta tropical"
-
-            if "depres" in valor.lower():
-                return "Depresión tropical"
+    # Segundo respaldo: la síntesis oficial suele expresar
+    # "huracán Polo de categoría N" dentro de una oración.
+    m = re.search(
+        r"hurac[aá]n\s+Polo.{0,40}?categor[ií]a\s+([1-5])",
+        texto, re.IGNORECASE
+    )
+    if m:
+        return f"Huracán categoría {m.group(1)}"
 
     return "No confirmado"
 
@@ -998,7 +949,7 @@ def main():
 
     print()
     print("========================================")
-    print(" ACTUALIZADOR CICLÓN POLO V5.0")
+    print(" ACTUALIZADOR CICLÓN POLO V5.1")
     print(" Fuente exclusiva: SMN / CONAGUA")
     print(f" URL específica de Polo: {URL}")
     print(" Datos JSON + mapa + trayectoria automática")
