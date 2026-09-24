@@ -26,17 +26,32 @@ jobs:
           python -m pip install --upgrade pip
           pip install requests beautifulsoup4 pypdf
 
+      - name: Verificar archivos
+        run: |
+          echo "Archivos disponibles:"
+          ls -la
+          test -f actualizar_polo_v6.0.py || (echo "ERROR: No existe actualizar_polo_v6.0.py" && exit 1)
+          test -f datos_polo.json || (echo "ERROR: No existe datos_polo.json" && exit 1)
+
       - name: Actualizar datos de Polo
-        run: python actualizar_polo_v5.6_diagnostico.py
+        run: python actualizar_polo_v6.0.py
+
+      - name: Mostrar resultado
+        run: |
+          echo "===== DATOS GENERADOS ====="
+          cat datos_polo.json
+          echo "============================"
 
       - name: Guardar cambios
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
           git add datos_polo.json
+
           if git diff --cached --quiet; then
             echo "No hay cambios que guardar."
           else
-            git commit -m "Actualización automática SMN/CONAGUA"
+            git commit -m "Actualización automática Polo - SMN/CONAGUA"
             git push
           fi
