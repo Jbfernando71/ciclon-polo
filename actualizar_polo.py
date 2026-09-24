@@ -2,23 +2,18 @@ import requests
 import re
 import sys
 import json
-from io import BytesIO
 from pathlib import Path
 from urllib.parse import urljoin
 from bs4 import BeautifulSoup
-from pypdf import PdfReader
 
 # ============================================================
-# ACTUALIZADOR CICLÓN POLO V5.5
+# ACTUALIZADOR CICLÓN POLO V5.7
 # Fuente exclusiva: SMN / CONAGUA
-# Histórico oficial de Polo: 10790
+# Fuente primaria: WebAviso oficial del Pacífico
 # ============================================================
 
-HISTORICO_ID = "10790"
 BASE = "https://smn.conagua.gob.mx"
-URL_HISTORICO = (
-    f"{BASE}/tools/GUI/PortalLaravel/public/historicos/{HISTORICO_ID}"
-)
+URL_AVISO = f"{BASE}/tools/GUI/PortalLaravel/public/WebAviso"
 DATOS = Path("datos_polo.json")
 
 HEADERS = {
@@ -39,110 +34,6 @@ def get(url, timeout=45):
     r.raise_for_status()
     return r
 
-def cargar_actual():
-    if not DATOS.exists():
-        return {}
-    try:
-        return json.loads(DATOS.read_text(encoding="utf-8"))
-    except Exception:
-        return {}
-
-# ============================================================
-# LEER LA TABLA REAL DEL HISTÓRICO
-# ============================================================
-
-def obtener_ultimo_boletin():
-    print("Consultando histórico oficial SMN:", URL_HISTORICO)
-    r = get(URL_HISTORICO)
-    soup = BeautifulSoup(r.text, "html.parser")
-
-    candidatos = []
-
-    for fila in soup.find_all("tr"):
-        celdas = fila.find_all(["td", "th"])
-        if len(celdas) < 3:
-            continue
-
-        valores = [limpiar(c.get_text(" ", strip=True)) for c in celdas]
-        nombre = valores[0]
-
-        if not re.search(r"\bPolo\b", nombre, re.I):
-            continue
-
-        # La segunda columna visible es el número real del aviso.
-        m_aviso = re.fullmatch(r"\s*(\d+)\s*", valores[1])
-        if not m_aviso:
-            continue
-
-        aviso = int(m_aviso.group(1))
-
-        # El PDF se toma de LA MISMA FILA; no se deduce el aviso de la URL.
-        enlace_pdf = None
-        for a in fila.find_all("a", href=True):
-            href = a["href"]
-            texto_a = limpiar(a.get_text(" ", strip=True))
-            if (
-                "pdf" in href.lower()
-                or "pdf" in texto_a.lower()
-                or "/historicos/pdf/" in href.lower()
-            ):
-                enlace_pdf = urljoin(URL_HISTORICO, href)
-                break
-
-        if not enlace_pdf:
-            continue
-
-        fecha_tabla = valores[2] if len(valores) >= 3 else ""
-
-        candidatos.append({
-            "aviso": aviso,
-            "fecha_tabla": fecha_tabla,
-            "url_pdf": enlace_pdf,
-        })
-
-    if not candidatos:
-        raise RuntimeError(
-            "El histórico 10790 respondió, pero no pude leer las filas "
-            "de Huracán Polo con su número de aviso y PDF."
-        )
-
-    ultimo = max(candidatos, key=lambda x: x["aviso"])
-
-    print("Avisos de Polo encontrados:", len(candidatos))
-    print("Último aviso localizado:", ultimo["aviso"])
-    print("Fecha de tabla:", ultimo["fecha_tabla"])
-    print("PDF de la misma fila:", ultimo["url_pdf"])
-
-    return ultimo
-
-# ============================================================
-# LEER PDF OFICIAL
-# ============================================================
-
-def obtener_texto_pdf(url):
-    r = get(url)
-
-    content_type = r.headers.get("Content-Type", "").lower()
-    if "pdf" not in content_type and not r.content.startswith(b"%PDF"):
-        raise RuntimeError(
-            "El enlace seleccionado no devolvió un PDF válido del SMN."
-        )
-
-    reader = PdfReader(BytesIO(r.content))
-    texto = limpiar(
-        " ".join((pagina.extract_text() or "") for pagina in reader.pages)
-    )
-
-    if not texto:
-        raise RuntimeError("No fue posible extraer texto del PDF oficial.")
-
-    if not re.search(r"\bPolo\b", texto, re.I):
-        raise RuntimeError(
-            "El PDF seleccionado no pudo validarse como un aviso de Polo."
-        )
-
-    return texto
-
 def buscar(patrones, texto, flags=re.I):
     if isinstance(patrones, str):
         patrones = [patrones]
@@ -152,48 +43,129 @@ def buscar(patrones, texto, flags=re.I):
             return limpiar(m.group(1))
     return None
 
-# ============================================================
-# EXTRAER DATOS
-# ============================================================
+def cargar_actual():
+    if not DATOS.exists():
+        return {}
+    try:
+        return json.loads(DATOS.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
 
-def extraer(aviso, fecha_tabla, url_pdf, texto):
+def obtener_webaviso():
+    print("Consultando WebAviso oficial SMN:", URL_AVISO)
+    r = get(URL_AVISO)
+    soup = BeautifulSoup(r.text, "html.parser")
+    texto = limpiar(soup.get_text(" ", strip=True))
+
+    if not re.search(r"\bPolo\b", texto, re.I):
+        raise RuntimeError(
+            "WebAviso respondió, pero no pude confirmar que el aviso mostrado corresponda a Polo."
+        )
+
+    return soup, texto
+
+def extraer_pronostico(soup):
+    filas = []
+
+    for tabla in soup.find_all("table"):
+        encabezado = limpiar(tabla.get_text(" ", strip=True))
+        if not (
+            re.search(r"D[ií]a/Hora", encabezado, re.I)
+            and re.search(r"Latitud", encabezado, re.I)
+            and re.search(r"Vientos", encabezado, re.I)
+            and re.search(r"Categor[ií]a", encabezado, re.I)
+        ):
+            continue
+
+        for tr in tabla.find_all("tr"):
+            celdas = [
+                limpiar(c.get_text(" ", strip=True))
+                for c in tr.find_all(["td", "th"])
+            ]
+            if len(celdas) < 6:
+                continue
+            if re.search(r"D[ií]a/Hora", celdas[0], re.I):
+                continue
+            if not re.match(r"\d{1,2}/\d{1,2}", celdas[0]):
+                continue
+
+            filas.append({
+                "dia_hora": celdas[0],
+                "lat": celdas[1],
+                "lon": celdas[2],
+                "viento": celdas[3],
+                "categoria": celdas[4],
+                "ubicacion": celdas[5],
+            })
+
+        if filas:
+            break
+
+    return filas
+
+def extraer_mapa(soup):
+    candidatos = []
+    for img in soup.find_all("img", src=True):
+        src = urljoin(URL_AVISO, img["src"])
+        alt = limpiar(img.get("alt", ""))
+        contexto = limpiar(img.parent.get_text(" ", strip=True)) if img.parent else ""
+        puntaje = 0
+        if "ImgTray" in src:
+            puntaje += 10
+        if re.search(r"trayectoria|pron[oó]stico", alt, re.I):
+            puntaje += 5
+        if re.search(r"trayectoria|pron[oó]stico", contexto, re.I):
+            puntaje += 2
+        if puntaje:
+            candidatos.append((puntaje, src))
+
+    if not candidatos:
+        return "No confirmado"
+
+    candidatos.sort(reverse=True)
+    return candidatos[0][1]
+
+def extraer(soup, texto):
     d = {
         "ciclon": "Polo",
         "fuente": "SMN / CONAGUA",
-        "url_oficial": url_pdf,
-        "aviso": aviso,
+        "url_oficial": URL_AVISO,
     }
 
-    # La fecha/hora de la tabla del histórico es oficial.
-    mt = re.search(
-        r"(20\d{2}-\d{2}-\d{2})\s+(\d{1,2}:\d{2})",
-        fecha_tabla
-    )
-    if mt:
-        d["fecha"] = mt.group(1)
-        d["hora_publicacion"] = mt.group(2)
-    else:
-        d["fecha"] = "No confirmado"
-        d["hora_publicacion"] = "No confirmado"
+    aviso = buscar([
+        r"Oc[eé]ano\s+Pac[ií]fico\s*-\s*No\.\s*Aviso\s*:?\s*(\d+)",
+        r"No\.\s*Aviso\s*:?\s*(\d+)"
+    ], texto)
+    d["aviso"] = int(aviso) if aviso else "No confirmado"
 
-    # Hora local/GMT del propio boletín.
+    clas = None
+    m = re.search(r"HURAC[AÁ]N\s+POLO\s+DE\s+CATEGOR[IÍ]A\s+([1-5])", texto, re.I)
+    if not m:
+        m = re.search(r"hurac[aá]n\s+Polo\s+de\s+categor[ií]a\s+([1-5])", texto, re.I)
+    if m:
+        clas = f"Huracán categoría {m.group(1)}"
+    elif re.search(r"tormenta\s+tropical\s+Polo", texto, re.I):
+        clas = "Tormenta tropical"
+    elif re.search(r"depresi[oó]n\s+tropical\s+Polo", texto, re.I):
+        clas = "Depresión tropical"
+    d["clasificacion"] = clas or "No confirmado"
+
     mh = re.search(
-        r"Hora\s+local\s*\(hora\s+GMT\)\s*:?\s*"
+        r"Hora\s+local\s*\(hora\s+(?:GMT|UTC)\)\s*"
         r"(\d{1,2}:\d{2})\s*horas?\s*"
-        r"\((\d{1,2}:\d{2})\s*horas?\s*GMT",
+        r"\((\d{1,2}:\d{2})\s*horas?\s*(?:GMT|UTC)",
         texto, re.I
     )
     if mh:
         d["hora"] = mh.group(1)
         d["gmt"] = mh.group(2)
     else:
-        d["hora"] = d["hora_publicacion"]
-        d["gmt"] = "No confirmado"
+        d["hora"] = d["gmt"] = "No confirmado"
 
-    # Coordenadas.
     mp = re.search(
-        r"Latitud\s+Norte\s*:?\s*(\d{1,2}(?:\.\d+)?)\s*"
-        r"Longitud\s+Oeste\s*:?\s*(\d{2,3}(?:\.\d+)?)",
+        r"Ubicaci[oó]n\s+del\s+centro\s+Latitud\s+Norte\s*:?\s*"
+        r"(\d{1,2}(?:\.\d+)?)\s+Longitud\s+Oeste\s*:?\s*"
+        r"(\d{2,3}(?:\.\d+)?)",
         texto, re.I
     )
     if mp:
@@ -202,233 +174,160 @@ def extraer(aviso, fecha_tabla, url_pdf, texto):
         d["lat"] = d["lon"] = "No confirmado"
 
     d["referencia"] = buscar(
-        r"Distancia\s+al\s+lugar\s+m[aá]s\s+cercano\s*:?\s*(.+?)"
+        r"Distancia\s+al\s+lugar\s+m[aá]s\s+cercano\s+(.+?)"
         r"(?=\s+Desplazamiento\s+actual)",
         texto, re.I | re.S
     ) or "No confirmado"
 
     d["movimiento"] = buscar(
-        r"Desplazamiento\s+actual\s*:?\s*(.+?)"
-        r"(?=\s+Vientos\s+m[aá]ximos)",
+        r"Desplazamiento\s+actual\s+(.+?)"
+        r"(?=\s+Vientos?\s+m[aá]ximos?)",
         texto, re.I | re.S
     ) or "No confirmado"
 
-    # Viento/Rachas.
-    # El PDF oficial de Polo contiene una tabla histórica con formato:
-    # Aviso No. Fecha/Hora ... Viento Máx./Rachas
-    # y valores como 230/280. Para evitar tomar un aviso anterior,
-    # buscamos primero una fila/segmento asociado al aviso actual.
-    viento = racha = None
-
-    # Formato directo, por si el boletín lo expone como etiquetas.
     mv = re.search(
-        r"Vientos?\s+m[aá]ximos?.*?"
-        r"Sostenidos\s*:?\s*(\d{2,3}).*?"
+        r"Vientos?\s+m[aá]ximos?\s*\[?km/h\]?\s*"
+        r"Sostenidos\s*:?\s*(\d{2,3})\s+"
         r"Rachas\s*:?\s*(\d{2,3})",
-        texto, re.I | re.S
+        texto, re.I
     )
     if mv:
-        viento, racha = int(mv.group(1)), int(mv.group(2))
-
-    # Formato tabla histórica. Localizamos el aviso actual y, dentro de
-    # un segmento acotado, la pareja Viento Máx./Rachas.
-    if viento is None:
-        # La fila suele comenzar con el número de aviso seguido de fecha.
-        patron_fila = (
-            rf"(?:^|\s){aviso}\s+"
-            rf"20\d{{2}}-\d{{2}}-\d{{2}}\s+"
-            rf"\d{{1,2}}:\d{{2}}"
-            rf"(.{{0,700}}?)"
-            rf"(\d{{2,3}})\s*/\s*(\d{{2,3}})"
-        )
-        mf = re.search(patron_fila, texto, re.I | re.S)
-        if mf:
-            viento, racha = int(mf.group(2)), int(mf.group(3))
-
-    # Respaldo: en algunos PDF pypdf coloca Viento Máx./Rachas antes
-    # de las filas. Tomamos sólo el bloque comprendido entre el aviso
-    # actual y el aviso inmediatamente anterior.
-    if viento is None:
-        pos_actual = re.search(
-            rf"(?:^|\s){aviso}\s+20\d{{2}}-\d{{2}}-\d{{2}}",
-            texto, re.I
-        )
-        if pos_actual:
-            inicio = pos_actual.start()
-            fin = min(len(texto), inicio + 1200)
-            bloque = texto[inicio:fin]
-            pares = re.findall(r"\b(\d{2,3})\s*/\s*(\d{2,3})\b", bloque)
-            if pares:
-                # La primera pareja después de la identificación del aviso
-                # corresponde a Viento Máx./Rachas de esa fila.
-                viento, racha = map(int, pares[0])
-
-    d["viento"] = viento if viento is not None else "No confirmado"
-    d["racha"] = racha if racha is not None else "No confirmado"
+        d["viento"] = int(mv.group(1))
+        d["racha"] = int(mv.group(2))
+    else:
+        d["viento"] = d["racha"] = "No confirmado"
 
     presion = buscar(
-        r"Presi[oó]n\s+m[ií]nima\s+central.*?(\d{3,4})",
-        texto, re.I | re.S
+        r"Presi[oó]n\s+m[ií]nima\s+central\s*\[?hpa\]?\s*(\d{3,4})",
+        texto
     )
     d["presion"] = f"{presion} hPa" if presion else "No confirmado"
 
-    # Clasificación. Varias formas posibles del texto oficial.
-    clas = None
-    patrones_cat = [
-        r"Hurac[aá]n\s+Polo.{0,80}?categor[ií]a\s+([1-5])",
-        r"Polo.{0,80}?categor[ií]a\s+([1-5])",
-        r"POLO\s+CATEGOR[IÍ]A\s+([1-5])",
-        r"HURAC[AÁ]N\s+CATEGOR[IÍ]A\s+([1-5]).{0,80}?POLO",
-    ]
-    for patron in patrones_cat:
-        m = re.search(patron, texto, re.I | re.S)
-        if m:
-            clas = f"Huracán categoría {m.group(1)}"
-            break
-
-    if not clas and re.search(
-        r"tormenta\s+tropical\s+Polo|Polo.{0,50}?tormenta\s+tropical",
-        texto, re.I | re.S
-    ):
-        clas = "Tormenta tropical"
-
-    if not clas and re.search(
-        r"depresi[oó]n\s+tropical\s+Polo|Polo.{0,50}?depresi[oó]n\s+tropical",
-        texto, re.I | re.S
-    ):
-        clas = "Depresión tropical"
-
-    d["clasificacion"] = clas or "No confirmado"
-
     d["lluvia"] = buscar(
-        r"Pron[oó]stico\s+de\s+lluvia\s*:?\s*(.+?)"
+        r"Pron[oó]stico\s+de\s+lluvia\s+(.+?)"
         r"(?=\s+Zona\s+de\s+vigilancia)",
         texto, re.I | re.S
     ) or "No confirmado"
 
     d["vigilancia"] = buscar(
-        r"Zona\s+de\s+vigilancia\s*:?\s*(.+?)"
+        r"Zona\s+de\s+vigilancia\s+(.+?)"
         r"(?=\s+Comentarios\s+adicionales)",
         texto, re.I | re.S
     ) or "No confirmado"
 
     comentarios = buscar(
-        r"Comentarios\s+adicionales\s*:?\s*(.+?)"
+        r"Comentarios\s+adicionales\s+(.+?)"
         r"(?=\s+Recomendaciones)",
         texto, re.I | re.S
     ) or ""
 
-    d["viento_costero"] = buscar(
-        r"((?:Se\s+prev[eé]n\s+)?rachas?\s+de\s+viento.+?km/h[^.;]*)",
-        comentarios, re.I | re.S
-    ) or "No confirmado"
+    # En el dashboard conviene conservar el texto costero completo porque
+    # puede contener varios estados y varios rangos de viento.
+    d["viento_costero"] = comentarios if comentarios else "No confirmado"
 
-    d["oleaje"] = buscar(
-        r"(oleaje\s+de\s+\d+(?:\.\d+)?\s+a\s+\d+(?:\.\d+)?\s+metros?.+?)"
-        r"(?=\.|$)",
-        comentarios, re.I | re.S
-    ) or "No confirmado"
+    oleajes = re.findall(
+        r"oleaje\s+de\s+\d+(?:\.\d+)?\s+a\s+\d+(?:\.\d+)?\s+metros?"
+        r"(?:\s+de\s+altura)?[^.;]*",
+        comentarios, re.I
+    )
+    d["oleaje"] = "; ".join(limpiar(x) for x in oleajes) if oleajes else "No confirmado"
+
+    # Fecha/hora: se toma de la fila del aviso actual en Historial de Seguimiento.
+    if isinstance(d["aviso"], int):
+        patron_hist = (
+            rf"(?:^|\s){d['aviso']}\s+"
+            rf"(20\d{{2}}-\d{{2}}-\d{{2}})\s+"
+            rf"(\d{{1,2}}:\d{{2}})\s+horas?"
+        )
+        mhist = re.search(patron_hist, texto, re.I)
+        if mhist:
+            d["fecha"] = mhist.group(1)
+            # La hora de condiciones actuales es preferente; si falta, usa historial.
+            if d["hora"] == "No confirmado":
+                d["hora"] = mhist.group(2)
+        else:
+            d["fecha"] = "No confirmado"
+    else:
+        d["fecha"] = "No confirmado"
+
+    d["hora_publicacion"] = d["hora"]
+    d["mapa"] = extraer_mapa(soup)
+    d["pronostico"] = extraer_pronostico(soup)
 
     return d
 
-# ============================================================
-# VALIDACIÓN Y ESCRITURA SEGURA
-# ============================================================
-
 def validar(d):
-    esenciales = ["aviso", "fecha", "lat", "lon", "viento", "racha"]
-
-    faltan = [
-        campo for campo in esenciales
-        if d.get(campo) in (None, "", "No confirmado")
+    esenciales = [
+        "aviso", "fecha", "hora", "lat", "lon",
+        "viento", "racha", "clasificacion"
     ]
-
+    faltan = [
+        c for c in esenciales
+        if d.get(c) in (None, "", "No confirmado")
+    ]
     if faltan:
         raise RuntimeError(
-            "Se localizó el boletín, pero faltan campos esenciales: "
-            + ", ".join(faltan)
+            "Faltan campos esenciales del aviso oficial: " + ", ".join(faltan)
         )
 
-    if d["racha"] < d["viento"]:
+    if int(d["racha"]) < int(d["viento"]):
+        raise RuntimeError("Validación fallida: racha menor que viento sostenido.")
+
+    if not d["pronostico"]:
         raise RuntimeError(
-            "Validación fallida: la racha es menor al viento sostenido."
+            "No pude confirmar la tabla de pronóstico del aviso actual."
         )
 
-def preparar_salida(nuevo):
-    actual = cargar_actual()
-
-    # Conservamos sólo elementos visuales/complementarios que el PDF
-    # no proporciona de forma estructurada, para no romper el dashboard.
-    nuevo["mapa"] = actual.get("mapa", "")
-    nuevo["pronostico"] = actual.get("pronostico", [])
-
-    return nuevo
+    if d["mapa"] == "No confirmado":
+        print("ADVERTENCIA: no se confirmó imagen de trayectoria; no se reutilizará una anterior.")
 
 def main():
-    print("========================================")
-    print(" ACTUALIZADOR CICLÓN POLO V5.3")
+    print("=" * 64)
+    print(" ACTUALIZADOR CICLÓN POLO V5.7")
     print(" Fuente exclusiva: SMN / CONAGUA")
-    print(" Histórico oficial:", HISTORICO_ID)
-    print("========================================")
+    print(" Fuente primaria: WebAviso")
+    print("=" * 64)
 
-    ultimo = obtener_ultimo_boletin()
+    soup, texto = obtener_webaviso()
+    nuevo = extraer(soup, texto)
+    validar(nuevo)
 
     actual = cargar_actual()
-    aviso_actual = actual.get("aviso")
-
     try:
-        aviso_actual_num = int(aviso_actual)
+        aviso_anterior = int(actual.get("aviso", 0))
     except (TypeError, ValueError):
-        aviso_actual_num = 0
+        aviso_anterior = 0
 
-    if ultimo["aviso"] < aviso_actual_num:
+    if int(nuevo["aviso"]) < aviso_anterior:
         raise RuntimeError(
-            f"El histórico indica Aviso {ultimo['aviso']}, "
-            f"anterior al publicado {aviso_actual_num}."
+            f"WebAviso devolvió Aviso {nuevo['aviso']}, anterior al "
+            f"Aviso {aviso_anterior} ya publicado."
         )
 
-    texto = obtener_texto_pdf(ultimo["url_pdf"])
-
-    nuevo = extraer(
-        ultimo["aviso"],
-        ultimo["fecha_tabla"],
-        ultimo["url_pdf"],
-        texto
-    )
-
-    validar(nuevo)
-    salida = preparar_salida(nuevo)
-
-    contenido = json.dumps(
-        salida,
-        ensure_ascii=False,
-        indent=2
-    ) + "\n"
-
-    actual_texto = (
-        DATOS.read_text(encoding="utf-8")
-        if DATOS.exists()
-        else ""
-    )
+    contenido = json.dumps(nuevo, ensure_ascii=False, indent=2) + "\n"
+    actual_texto = DATOS.read_text(encoding="utf-8") if DATOS.exists() else ""
 
     if contenido == actual_texto:
-        print("El dashboard ya contiene el último aviso.")
+        print("El dashboard ya contiene exactamente el último aviso.")
         return
 
     temporal = Path("datos_polo.json.tmp")
     temporal.write_text(contenido, encoding="utf-8")
     temporal.replace(DATOS)
 
-    print("----------------------------------------")
+    print("-" * 64)
     print("ACTUALIZACIÓN CORRECTA")
-    print("Aviso:", salida["aviso"])
-    print("Fecha:", salida["fecha"])
-    print("Hora:", salida["hora"])
-    print("Clasificación:", salida["clasificacion"])
-    print("Posición:", salida["lat"], "N /", salida["lon"], "O")
-    print("Viento:", salida["viento"], "km/h")
-    print("Rachas:", salida["racha"], "km/h")
-    print("----------------------------------------")
+    print("Aviso:", nuevo["aviso"])
+    print("Fecha/Hora:", nuevo["fecha"], nuevo["hora"], "GMT:", nuevo["gmt"])
+    print("Clasificación:", nuevo["clasificacion"])
+    print("Posición:", nuevo["lat"], "N /", nuevo["lon"], "O")
+    print("Referencia:", nuevo["referencia"])
+    print("Movimiento:", nuevo["movimiento"])
+    print("Viento/Rachas:", nuevo["viento"], "/", nuevo["racha"], "km/h")
+    print("Presión:", nuevo["presion"])
+    print("Pronóstico:", len(nuevo["pronostico"]), "filas")
+    print("Mapa:", nuevo["mapa"])
+    print("-" * 64)
     print("datos_polo.json actualizado.")
     print("index.html permanece intacto.")
 
