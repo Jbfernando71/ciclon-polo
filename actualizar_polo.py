@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 from pypdf import PdfReader
 
 # ============================================================
-# ACTUALIZADOR CICLÓN POLO V5.4 DIAGNÓSTICO
+# ACTUALIZADOR CICLÓN POLO V5.5
 # Fuente exclusiva: SMN / CONAGUA
 # Histórico oficial de Polo: 10790
 # ============================================================
@@ -213,17 +213,58 @@ def extraer(aviso, fecha_tabla, url_pdf, texto):
         texto, re.I | re.S
     ) or "No confirmado"
 
+    # Viento/Rachas.
+    # El PDF oficial de Polo contiene una tabla histórica con formato:
+    # Aviso No. Fecha/Hora ... Viento Máx./Rachas
+    # y valores como 230/280. Para evitar tomar un aviso anterior,
+    # buscamos primero una fila/segmento asociado al aviso actual.
+    viento = racha = None
+
+    # Formato directo, por si el boletín lo expone como etiquetas.
     mv = re.search(
-        r"Vientos\s+m[aá]ximos.*?"
+        r"Vientos?\s+m[aá]ximos?.*?"
         r"Sostenidos\s*:?\s*(\d{2,3}).*?"
         r"Rachas\s*:?\s*(\d{2,3})",
         texto, re.I | re.S
     )
     if mv:
-        d["viento"] = int(mv.group(1))
-        d["racha"] = int(mv.group(2))
-    else:
-        d["viento"] = d["racha"] = "No confirmado"
+        viento, racha = int(mv.group(1)), int(mv.group(2))
+
+    # Formato tabla histórica. Localizamos el aviso actual y, dentro de
+    # un segmento acotado, la pareja Viento Máx./Rachas.
+    if viento is None:
+        # La fila suele comenzar con el número de aviso seguido de fecha.
+        patron_fila = (
+            rf"(?:^|\s){aviso}\s+"
+            rf"20\d{{2}}-\d{{2}}-\d{{2}}\s+"
+            rf"\d{{1,2}}:\d{{2}}"
+            rf"(.{{0,700}}?)"
+            rf"(\d{{2,3}})\s*/\s*(\d{{2,3}})"
+        )
+        mf = re.search(patron_fila, texto, re.I | re.S)
+        if mf:
+            viento, racha = int(mf.group(2)), int(mf.group(3))
+
+    # Respaldo: en algunos PDF pypdf coloca Viento Máx./Rachas antes
+    # de las filas. Tomamos sólo el bloque comprendido entre el aviso
+    # actual y el aviso inmediatamente anterior.
+    if viento is None:
+        pos_actual = re.search(
+            rf"(?:^|\s){aviso}\s+20\d{{2}}-\d{{2}}-\d{{2}}",
+            texto, re.I
+        )
+        if pos_actual:
+            inicio = pos_actual.start()
+            fin = min(len(texto), inicio + 1200)
+            bloque = texto[inicio:fin]
+            pares = re.findall(r"\b(\d{2,3})\s*/\s*(\d{2,3})\b", bloque)
+            if pares:
+                # La primera pareja después de la identificación del aviso
+                # corresponde a Viento Máx./Rachas de esa fila.
+                viento, racha = map(int, pares[0])
+
+    d["viento"] = viento if viento is not None else "No confirmado"
+    d["racha"] = racha if racha is not None else "No confirmado"
 
     presion = buscar(
         r"Presi[oó]n\s+m[ií]nima\s+central.*?(\d{3,4})",
@@ -347,25 +388,6 @@ def main():
         )
 
     texto = obtener_texto_pdf(ultimo["url_pdf"])
-
-    # V5.4 DIAGNÓSTICO: mostrar cómo pypdf extrae la zona de viento/rachas.
-    print("===== DIAGNÓSTICO PDF AVISO", ultimo["aviso"], "=====")
-    coincidencias = list(re.finditer(
-        r"(viento|vientos|sostenido|sostenidos|racha|rachas)",
-        texto,
-        re.I
-    ))
-    if coincidencias:
-        for i, m in enumerate(coincidencias[:12], 1):
-            ini = max(0, m.start() - 500)
-            fin = min(len(texto), m.end() + 1000)
-            print(f"--- FRAGMENTO {i} ---")
-            print(texto[ini:fin])
-    else:
-        print("No se localizaron palabras de viento/rachas en el texto extraído.")
-        print("Primeros 8000 caracteres del PDF:")
-        print(texto[:8000])
-    print("===== FIN DIAGNÓSTICO PDF =====")
 
     nuevo = extraer(
         ultimo["aviso"],
