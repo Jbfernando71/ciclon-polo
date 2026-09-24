@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 from pypdf import PdfReader
 
 # ============================================================
-# ACTUALIZADOR CICLÓN POLO V5.3
+# ACTUALIZADOR CICLÓN POLO V5.4 DIAGNÓSTICO
 # Fuente exclusiva: SMN / CONAGUA
 # Histórico oficial de Polo: 10790
 # ============================================================
@@ -347,6 +347,25 @@ def main():
         )
 
     texto = obtener_texto_pdf(ultimo["url_pdf"])
+
+    # V5.4 DIAGNÓSTICO: mostrar cómo pypdf extrae la zona de viento/rachas.
+    print("===== DIAGNÓSTICO PDF AVISO", ultimo["aviso"], "=====")
+    coincidencias = list(re.finditer(
+        r"(viento|vientos|sostenido|sostenidos|racha|rachas)",
+        texto,
+        re.I
+    ))
+    if coincidencias:
+        for i, m in enumerate(coincidencias[:12], 1):
+            ini = max(0, m.start() - 500)
+            fin = min(len(texto), m.end() + 1000)
+            print(f"--- FRAGMENTO {i} ---")
+            print(texto[ini:fin])
+    else:
+        print("No se localizaron palabras de viento/rachas en el texto extraído.")
+        print("Primeros 8000 caracteres del PDF:")
+        print(texto[:8000])
+    print("===== FIN DIAGNÓSTICO PDF =====")
 
     nuevo = extraer(
         ultimo["aviso"],
