@@ -27,7 +27,7 @@ jobs:
           pip install requests beautifulsoup4 pypdf
 
       - name: Actualizar datos de Polo
-        run: python actualizar_polo.py
+        run: python actualizar_polo_v5.6_diagnostico.py
 
       - name: Guardar cambios
         run: |
