@@ -2,89 +2,89 @@
   "ciclon": "Polo",
   "fuente": "SMN / CONAGUA",
   "url_oficial": "https://smn.conagua.gob.mx/es/pronosticos/avisos/aviso-de-ciclon-tropical-en-el-oceano-pacifico",
-  "url_datos": "https://smn.conagua.gob.mx/tools/GUI/PortalLaravel/public/WebAviso?searchText=10838",
-  "aviso": 37,
-  "fecha": "2026-09-24",
-  "hora_publicacion": "21:00",
-  "hora": "21:00",
-  "gmt": "03:00",
-  "lat": "17.1",
-  "lon": "106.5",
-  "referencia": "A 315 km al suroeste de Manzanillo, Col., y a 735 km al sur-sureste de Cabo San Lucas, B.C.S.",
-  "movimiento": "Hacia el oeste (280°) a 19 km/h",
-  "viento": 240,
-  "racha": 295,
-  "presion": "935 hPa",
-  "clasificacion": "Huracán categoría 4",
-  "lluvia": "Su amplia circulación refuerza la probabilidad de lluvias puntuales intensas (75 a 150 mm) en Jalisco (oeste, sur y costa), Colima y Michoacán (oeste y costa), así como lluvias muy fuertes (50 a 75 mm) en Nayarit (sur y costa) y lluvias fuertes (25 a 50 mm) en Guerrero (oeste).",
+  "url_datos": "https://smn.conagua.gob.mx/es/pronosticos/avisos/aviso-de-ciclon-tropical-en-el-oceano-pacifico",
+  "aviso": 40,
+  "fecha": "2026-09-25",
+  "hora_publicacion": "06:00",
+  "hora": "06:00",
+  "gmt": "12:00",
+  "lat": "17.2",
+  "lon": "108.0",
+  "referencia": "A 430 km sur-suroeste de Cabo Corrientes, Jal., y a 660 km al sur-sureste de Cabo San Lucas, B.C.S.",
+  "movimiento": "Hacia el oeste (275°) a 19 km/h",
+  "viento": 260,
+  "racha": 315,
+  "presion": "929 hPa",
+  "clasificacion": "Huracán categoría 5",
+  "lluvia": "Su amplia circulación refuerza la probabilidad de lluvias puntuales lluvias muy fuertes (50 a 75 mm) en Jalisco (oeste, costa y sur), Sinaloa (sur) y Nayarit (norte, costa y sur), y lluvias fuertes (25 a 50 mm) en Baja California Sur (sur), Colima y Michoacán (centro, costa y oeste).",
   "vigilancia": "Sin zona de vigilancia indicada en el aviso vigente del SMN.",
-  "viento_costero": "Se prevén vientos de 40 a 50 km/h con rachas de 60 a 70 km/h en costas de Colima y Michoacán, y con oleaje de 5.0 a 7.0 metros de altura en costas de Michoacán, vientos de 30 a 40 km/h con rachas de 50 a 60 km/h con oleaje de 3.0 a 5.0 metros de altura en costas de Jalisco, Colima y Guerrero.",
-  "oleaje": "oleaje de 5.0 a 7.0 metros de altura en costas de Michoacán, vientos de 30 a 40 km/h con rachas de 50 a 60 km/h con oleaje de 3",
-  "mapa": "https://smn.conagua.gob.mx/tools/GUI/PortalLaravel/public/WebImg/ImgTray1790306261.jpg",
+  "viento_costero": "Se prevén vientos de 30 a 40 km/h con rachas de 50 a 60 km/h en las costas de Jalisco, y de 10 a 20 km/h con rachas de 30 a 50 km/h en las costas de Baja California Sur. Además, oleaje de 2.0 a 3.0 metros de altura en las costas de Baja California Sur, Nayarit y Jalisco, y de 1.0 a 2.0 metros de altura en las costas de Colima.",
+  "oleaje": "Se prevén vientos de 30 a 40 km/h con rachas de 50 a 60 km/h en las costas de Jalisco, y de 10 a 20 km/h con rachas de 30 a 50 km/h en las costas de Baja California Sur. Además, oleaje de 2.0 a 3.0 metros de altura en las costas de Baja California Sur, Nayarit y Jalisco, y de 1.0 a 2.0 metros de altura en las costas de Colima.",
+  "mapa": "https://smn.conagua.gob.mx/tools/GUI/PortalLaravel/public/WebImg/ImgTray1790336675.jpg",
   "pronostico": [
     {
-      "dia_hora": "25/06h",
-      "lat": "17.4",
-      "lon": "108.1",
+      "dia_hora": "25/12h",
+      "lat": "17.3",
+      "lon": "108.9",
       "viento": "260/315",
       "categoria": "Huracán categoría 5",
-      "ubicacion": "A 395 km al suroeste de Playa Pérula, Jal.; y a 420 km al suroeste de Cabo Corrientes, Jal."
+      "ubicacion": "A 470 km al oeste-suroeste de Playa Perula Jal."
     },
     {
-      "dia_hora": "25/18h",
-      "lat": "17.5",
-      "lon": "110.0",
+      "dia_hora": "26/00h",
+      "lat": "17.6",
+      "lon": "110.7",
       "viento": "240/295",
       "categoria": "Huracán categoría 4",
-      "ubicacion": "A 560 km al suroeste de Cabo Corrientes, Jal.; y a 560 km al oeste-suroeste de Playa Pérula, Jal."
+      "ubicacion": "A 590 km al sur de Cabo San Lucas BCS."
     },
     {
-      "dia_hora": "26/06h",
-      "lat": "18.0",
-      "lon": "111.6",
+      "dia_hora": "26/12h",
+      "lat": "18.5",
+      "lon": "112.2",
       "viento": "220/270",
       "categoria": "Huracán categoría 4",
-      "ubicacion": "A 565 km al sur-suroeste de Cabo San Lucas, B.C.S.; y a 680 km al oeste-suroeste de Cabo Corrientes, Jal."
+      "ubicacion": "A 540 km al sur-suroeste de Cabo San Lucas BCS."
     },
     {
-      "dia_hora": "26/18h",
-      "lat": "19.2",
-      "lon": "112.9",
-      "viento": "215/260",
-      "categoria": "Huracán categoría 4",
-      "ubicacion": "A 510 km al suroeste de Cabo San Lucas, B.C.S.; y a 575 km al sur-suroeste de Santa Fe, B.C.S."
-    },
-    {
-      "dia_hora": "27/06h",
-      "lat": "20.8",
-      "lon": "113.7",
+      "dia_hora": "27/00h",
+      "lat": "20.0",
+      "lon": "113.2",
       "viento": "205/250",
       "categoria": "Huracán categoría 3",
-      "ubicacion": "A 450 km al suroeste de Santa Fe, B.C.S.; y a 450 km al oeste-suroeste de Cabo San Lucas, B.C.S."
+      "ubicacion": "A 465 km al suroeste de Cabo San Lucas BCS."
     },
     {
-      "dia_hora": "27/18h",
-      "lat": "22.6",
-      "lon": "114.0",
-      "viento": "195/240",
+      "dia_hora": "27/12h",
+      "lat": "21.7",
+      "lon": "113.7",
+      "viento": "185/220",
       "categoria": "Huracán categoría 3",
-      "ubicacion": "A 300 km al suroeste de Cabo San Lázaro, B.C.S.; y a 340 km al oeste-suroeste de Santa Fe, B.C.S."
+      "ubicacion": "A 370 km al sur-suroeste de Cabo San Lázaro BCS."
     },
     {
-      "dia_hora": "28/18h",
-      "lat": "25.7",
-      "lon": "112.5",
+      "dia_hora": "28/00h",
+      "lat": "23.3",
+      "lon": "113.5",
       "viento": "175/215",
       "categoria": "Huracán categoría 2",
-      "ubicacion": "A 40 km al oeste-suroeste de Puerto San Andresito, B.C.S.; y a 155 km al sureste de Punta Abreojos, B.C.S."
+      "ubicacion": "A 205 km al suroeste de Cabo San Lázaro BCS."
     },
     {
-      "dia_hora": "29/18h",
-      "lat": "27.3",
-      "lon": "109.8",
-      "viento": "110/140",
-      "categoria": "Tormenta tropical",
-      "ubicacion": "En tierra sobre Sonora, a 75 km al nor-noroeste de Huatabampito, Son.; y a 120 km al este-sureste de Guaymas, Son."
+      "dia_hora": "29/00h",
+      "lat": "26.4",
+      "lon": "111.2",
+      "viento": "150/185",
+      "categoria": "Huracán categoría 1",
+      "ubicacion": "A 45 km al nor-noreste de Loreto BCS."
+    },
+    {
+      "dia_hora": "30/00h",
+      "lat": "29.0",
+      "lon": "107.5",
+      "viento": "55/75",
+      "categoria": "Depresión tropical",
+      "ubicacion": "En tierra sobre Chihuahua, a 350 km al este-noreste de Guaymas, Son."
     }
   ]
 }
