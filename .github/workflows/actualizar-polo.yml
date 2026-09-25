@@ -30,12 +30,12 @@ jobs:
         run: |
           echo "Archivos disponibles:"
           ls -la
-          test -f actualizar_polo_v6.4.py || (echo "ERROR: No existe actualizar_polo_v6.2.py" && exit 1)
+          test -f actualizar_polo_v6.5.py || (echo "ERROR: No existe actualizar_polo_v6.5.py" && exit 1)
           test -f datos_polo.json || (echo "ERROR: No existe datos_polo.json" && exit 1)
-          python -m py_compile actualizar_polo_v6.4.py
+          python -m py_compile actualizar_polo_v6.5.py
 
       - name: Actualizar datos de Polo
-        run: python actualizar_polo_v6.4.py
+        run: python actualizar_polo_v6.5.py
 
       - name: Mostrar resultado
         run: |
