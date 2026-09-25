@@ -2,89 +2,89 @@
   "ciclon": "Polo",
   "fuente": "SMN / CONAGUA",
   "url_oficial": "https://smn.conagua.gob.mx/es/pronosticos/avisos/aviso-de-ciclon-tropical-en-el-oceano-pacifico",
-  "url_datos": "https://smn.conagua.gob.mx/tools/GUI/PortalLaravel/public/WebAviso",
-  "aviso": 35,
+  "url_datos": "https://smn.conagua.gob.mx/tools/GUI/PortalLaravel/public/WebAviso?searchText=10838",
+  "aviso": 37,
   "fecha": "2026-09-24",
-  "hora_publicacion": "15:00",
-  "hora": "15:00",
-  "gmt": "21:00",
+  "hora_publicacion": "21:00",
+  "hora": "21:00",
+  "gmt": "03:00",
   "lat": "17.1",
-  "lon": "105.5",
-  "referencia": "A 245 km sur-suroeste de Manzanillo, Col, y a 790 km al sureste de Cabo San Lucas,",
-  "movimiento": "Hacia el oeste-noroeste (285°) a 17 km/h",
+  "lon": "106.5",
+  "referencia": "A 315 km al suroeste de Manzanillo, Col., y a 735 km al sur-sureste de Cabo San Lucas, B.C.S.",
+  "movimiento": "Hacia el oeste (280°) a 19 km/h",
   "viento": 240,
   "racha": 295,
   "presion": "935 hPa",
   "clasificacion": "Huracán categoría 4",
-  "lluvia": "Su amplia circulación refuerza la probabilidad de lluvias puntuales puntuales intensas (75 a 150 mm) en Jalisco (oeste, sur y costa), Colima y Michoacán (oeste y costa), así como lluvias muy fuertes (50 a 75 mm) en Nayarit (sur y costa) y lluvias fuertes (25 a 50 mm) en Guerrero (oeste).",
-  "vigilancia": "Se desactivan zona de prevención por efectos de vientos de tormenta tropical desde Técpan de Galeana, Gro., hasta Manzanillo, Col., y zona de vigilancia por efectos de vientos de tormenta tropical desde el oeste de Manzanillo, Col., hasta Playa Pérula, Jal.",
+  "lluvia": "Su amplia circulación refuerza la probabilidad de lluvias puntuales intensas (75 a 150 mm) en Jalisco (oeste, sur y costa), Colima y Michoacán (oeste y costa), así como lluvias muy fuertes (50 a 75 mm) en Nayarit (sur y costa) y lluvias fuertes (25 a 50 mm) en Guerrero (oeste).",
+  "vigilancia": "Sin zona de vigilancia indicada en el aviso vigente del SMN.",
   "viento_costero": "Se prevén vientos de 40 a 50 km/h con rachas de 60 a 70 km/h en costas de Colima y Michoacán, y con oleaje de 5.0 a 7.0 metros de altura en costas de Michoacán, vientos de 30 a 40 km/h con rachas de 50 a 60 km/h con oleaje de 3.0 a 5.0 metros de altura en costas de Jalisco, Colima y Guerrero.",
   "oleaje": "oleaje de 5.0 a 7.0 metros de altura en costas de Michoacán, vientos de 30 a 40 km/h con rachas de 50 a 60 km/h con oleaje de 3",
-  "mapa": "https://smn.conagua.gob.mx/tools/GUI/PortalLaravel/public/WebImg/ImgTray1790285335.jpg",
+  "mapa": "https://smn.conagua.gob.mx/tools/GUI/PortalLaravel/public/WebImg/ImgTray1790306261.jpg",
   "pronostico": [
     {
-      "dia_hora": "25/00h",
-      "lat": "17.2",
-      "lon": "106.8",
+      "dia_hora": "25/06h",
+      "lat": "17.4",
+      "lon": "108.1",
       "viento": "260/315",
       "categoria": "Huracán categoría 5",
-      "ubicacion": "A 315 km al sur-suroeste de Playa Pérula, Jal."
+      "ubicacion": "A 395 km al suroeste de Playa Pérula, Jal.; y a 420 km al suroeste de Cabo Corrientes, Jal."
     },
     {
-      "dia_hora": "25/12h",
-      "lat": "17.4",
-      "lon": "108.8",
-      "viento": "250/305",
-      "categoria": "Huracán categoría 4",
-      "ubicacion": "A 455 km al oeste-suroeste de Playa Pérula, Jal."
-    },
-    {
-      "dia_hora": "26/00h",
-      "lat": "17.8",
-      "lon": "110.5",
+      "dia_hora": "25/18h",
+      "lat": "17.5",
+      "lon": "110.0",
       "viento": "240/295",
       "categoria": "Huracán categoría 4",
-      "ubicacion": "A 565 km al sur de Cabo San Lucas, B.C.S."
+      "ubicacion": "A 560 km al suroeste de Cabo Corrientes, Jal.; y a 560 km al oeste-suroeste de Playa Pérula, Jal."
     },
     {
-      "dia_hora": "26/12h",
-      "lat": "18.7",
-      "lon": "112.0",
-      "viento": "230/280",
-      "categoria": "Huracán categoría 4",
-      "ubicacion": "A 510 km al sur-suroeste de Cabo San Lucas, B.C.S."
-    },
-    {
-      "dia_hora": "27/00h",
-      "lat": "20.3",
-      "lon": "113.1",
+      "dia_hora": "26/06h",
+      "lat": "18.0",
+      "lon": "111.6",
       "viento": "220/270",
       "categoria": "Huracán categoría 4",
-      "ubicacion": "A 435 km al suroeste de Cabo San Lucas, B.C.S."
+      "ubicacion": "A 565 km al sur-suroeste de Cabo San Lucas, B.C.S.; y a 680 km al oeste-suroeste de Cabo Corrientes, Jal."
     },
     {
-      "dia_hora": "27/12h",
-      "lat": "22.0",
-      "lon": "113.4",
+      "dia_hora": "26/18h",
+      "lat": "19.2",
+      "lon": "112.9",
+      "viento": "215/260",
+      "categoria": "Huracán categoría 4",
+      "ubicacion": "A 510 km al suroeste de Cabo San Lucas, B.C.S.; y a 575 km al sur-suroeste de Santa Fe, B.C.S."
+    },
+    {
+      "dia_hora": "27/06h",
+      "lat": "20.8",
+      "lon": "113.7",
       "viento": "205/250",
       "categoria": "Huracán categoría 3",
-      "ubicacion": "A 330 km al sur-suroeste de Cabo San Lázaro, B.C.S."
+      "ubicacion": "A 450 km al suroeste de Santa Fe, B.C.S.; y a 450 km al oeste-suroeste de Cabo San Lucas, B.C.S."
     },
     {
-      "dia_hora": "28/12h",
-      "lat": "25.2",
-      "lon": "112.8",
+      "dia_hora": "27/18h",
+      "lat": "22.6",
+      "lon": "114.0",
+      "viento": "195/240",
+      "categoria": "Huracán categoría 3",
+      "ubicacion": "A 300 km al suroeste de Cabo San Lázaro, B.C.S.; y a 340 km al oeste-suroeste de Santa Fe, B.C.S."
+    },
+    {
+      "dia_hora": "28/18h",
+      "lat": "25.7",
+      "lon": "112.5",
       "viento": "175/215",
       "categoria": "Huracán categoría 2",
-      "ubicacion": "A 80 km al noroeste de Cabo San Lázaro, B.C.S. y a 92 km/h al suroeste de Puerto San Andresito, B.C.S."
+      "ubicacion": "A 40 km al oeste-suroeste de Puerto San Andresito, B.C.S.; y a 155 km al sureste de Punta Abreojos, B.C.S."
     },
     {
-      "dia_hora": "29/12h",
-      "lat": "27.9",
-      "lon": "109.9",
+      "dia_hora": "29/18h",
+      "lat": "27.3",
+      "lon": "109.8",
       "viento": "110/140",
       "categoria": "Tormenta tropical",
-      "ubicacion": "En tierra a 95 km al este de Guaymas, Son. y a 230 km al este-noreste de Mulegé, B.C.S."
+      "ubicacion": "En tierra sobre Sonora, a 75 km al nor-noroeste de Huatabampito, Son.; y a 120 km al este-sureste de Guaymas, Son."
     }
   ]
 }
