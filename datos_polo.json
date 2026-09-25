@@ -3,16 +3,16 @@
   "fuente": "SMN / CONAGUA",
   "url_oficial": "https://smn.conagua.gob.mx/es/pronosticos/avisos/aviso-de-ciclon-tropical-en-el-oceano-pacifico",
   "url_datos": "https://smn.conagua.gob.mx/es/pronosticos/avisos/aviso-de-ciclon-tropical-en-el-oceano-pacifico",
-  "aviso": 41,
+  "aviso": 42,
   "fecha": "2026-09-25",
-  "hora_publicacion": "09:00",
-  "hora": "09:00",
-  "gmt": "15:00",
+  "hora_publicacion": "12:00",
+  "hora": "12:00",
+  "gmt": "18:00",
   "lat": "17.1",
-  "lon": "108.5",
-  "referencia": "A 470 km suroeste de Cabo Corrientes, Jal., y a 660 km al sur-sureste de Cabo San Lucas, B.C.S.",
+  "lon": "108.9",
+  "referencia": "A 500 km al suroeste de Cabo Corrientes, Jal., y a 645 km al sur de Cabo San Lucas, B.C.S.",
   "movimiento": "Hacia el oeste (270°) a 19 km/h.",
-  "viento": 285,
+  "viento": 290,
   "racha": 350,
   "presion": "900 hPa",
   "clasificacion": "Huracán categoría 5",
@@ -20,7 +20,7 @@
   "vigilancia": "Sin zona de vigilancia indicada en el aviso vigente del SMN.",
   "viento_costero": "Se prevén vientos de 20 a 30 km/h con rachas de 40 a 50 km/h en las costas de Jalisco, y de 10 a 20 km/h con rachas de 30 a 50 km/h en las costas de Baja California Sur. Además, oleaje de 2.0 a 3.0 metros de altura en las costas de Baja California Sur, Nayarit y Jalisco, y de 1.0 a 2.0 metros de altura en las costas de Colima.",
   "oleaje": "Se prevén vientos de 20 a 30 km/h con rachas de 40 a 50 km/h en las costas de Jalisco, y de 10 a 20 km/h con rachas de 30 a 50 km/h en las costas de Baja California Sur. Además, oleaje de 2.0 a 3.0 metros de altura en las costas de Baja California Sur, Nayarit y Jalisco, y de 1.0 a 2.0 metros de altura en las costas de Colima.",
-  "mapa": "https://smn.conagua.gob.mx/tools/GUI/PortalLaravel/public/WebImg/ImgTray1790350357.jpg",
+  "mapa": "https://smn.conagua.gob.mx/tools/GUI/PortalLaravel/public/WebImg/ImgTray1790360821.jpg",
   "pronostico": [
     {
       "dia_hora": "25/18h",
@@ -28,7 +28,7 @@
       "lon": "109.8",
       "viento": "290/350",
       "categoria": "Huracán categoría 5",
-      "ubicacion": "560 km al oeste-suroeste de Playa Perula, Jal."
+      "ubicacion": "560 km al oeste-suroeste de Playa Pérula, Jal."
     },
     {
       "dia_hora": "26/06h",
