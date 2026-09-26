@@ -3,24 +3,24 @@
   "fuente": "SMN / CONAGUA",
   "url_oficial": "https://smn.conagua.gob.mx/es/pronosticos/avisos/aviso-de-ciclon-tropical-en-el-oceano-pacifico",
   "url_datos": "https://smn.conagua.gob.mx/es/pronosticos/avisos/aviso-de-ciclon-tropical-en-el-oceano-pacifico",
-  "aviso": 46,
+  "aviso": 47,
   "fecha": "2026-09-26",
-  "hora_publicacion": "03:00",
-  "hora": "03:00",
-  "gmt": "09:00",
-  "lat": "17.6",
-  "lon": "111.0",
-  "referencia": "a 640 km al oeste-suroeste de Cabo Corrientes, Jal., y a 600 km al sur de Cabo San Lucas, B.C.S.",
-  "movimiento": "Hacia el oeste-noroeste (290°) a 15 km/h",
-  "viento": 270,
-  "racha": 325,
-  "presion": "917 hPa",
+  "hora_publicacion": "06:00",
+  "hora": "06:00",
+  "gmt": "12:00",
+  "lat": "17.7",
+  "lon": "111.5",
+  "referencia": "A 685 km al oeste-suroeste de Cabo Corrientes, Jal., y a 610 km al sur-suroeste de Cabo San Lucas, B.C.S.",
+  "movimiento": "Hacia el oeste-noroeste (290°) a 17 km/h",
+  "viento": 260,
+  "racha": 315,
+  "presion": "922 hPa",
   "clasificacion": "Huracán categoría 5",
   "lluvia": "Su amplia circulación reforzará la probabilidad de lluvias muy fuertes (50 a 75 mm) en Sinaloa (norte y sur) y Nayarit (norte, costa y sur); así como lluvias fuertes (25 a 50 mm) en Baja California Sur (sur).",
   "vigilancia": "Se mantiene zona de vigilancia por efectos de vientos de huracán desde Punta Eugenia hasta Santa Fe, B.C.S.",
   "viento_costero": "Se prevén vientos de 20 a 30 km/h con rachas de 40 a 60 km/h en Baja California Sur, y de 10 a 20 km/h con rachas de 30 a 50 km/h en las costas de Nayarit y Jalisco; además de oleaje de 2.5 a 3.5 metros en las costas de Baja California Sur y Nayarit; y oleaje de 1.5 a 2.5 metros de altura en las costas de Jalisco y Colima.",
   "oleaje": "Se prevén vientos de 20 a 30 km/h con rachas de 40 a 60 km/h en Baja California Sur, y de 10 a 20 km/h con rachas de 30 a 50 km/h en las costas de Nayarit y Jalisco; además de oleaje de 2.5 a 3.5 metros en las costas de Baja California Sur y Nayarit; y oleaje de 1.5 a 2.5 metros de altura en las costas de Jalisco y Colima.",
-  "mapa": "https://smn.conagua.gob.mx/tools/GUI/PortalLaravel/public/WebImg/ImgTray1790414938.jpg",
+  "mapa": "https://smn.conagua.gob.mx/tools/GUI/PortalLaravel/public/WebImg/ImgTray1790425061.jpg",
   "pronostico": [
     {
       "dia_hora": "26/12h",
@@ -28,7 +28,7 @@
       "lon": "112.1",
       "viento": "270/325",
       "categoria": "Huracán categoría 5",
-      "ubicacion": "A 555 km al sur-suroeste de Cabo San Lucas, BCS."
+      "ubicacion": "A 555 km al sur-suroeste de Cabo San Lucas BCS."
     },
     {
       "dia_hora": "27/00h",
@@ -36,7 +36,7 @@
       "lon": "113.3",
       "viento": "250/305",
       "categoria": "Huracán categoría 4",
-      "ubicacion": "A 495 km al suroeste de Cabo San Lucas, BCS."
+      "ubicacion": "A 495 km al suroeste de Cabo San Lucas BCS."
     },
     {
       "dia_hora": "27/12h",
@@ -44,7 +44,7 @@
       "lon": "113.8",
       "viento": "230/280",
       "categoria": "Huracán categoría 4",
-      "ubicacion": "A 395 km al sur-suroeste de Cabo San Lázaro, BCS."
+      "ubicacion": "A 395 km al sur-suroeste de Cabo San Lázaro BCS."
     },
     {
       "dia_hora": "28/00h",
@@ -52,7 +52,7 @@
       "lon": "113.8",
       "viento": "205/250",
       "categoria": "Huracán categoría 3",
-      "ubicacion": "A 220 km al suroeste de Cabo San Lázaro, BCS."
+      "ubicacion": "A 220 km al suroeste de Cabo San Lázaro BCS."
     },
     {
       "dia_hora": "28/12h",
@@ -60,7 +60,7 @@
       "lon": "113.2",
       "viento": "175/215",
       "categoria": "Huracán categoría 2",
-      "ubicacion": "A 100 km al oeste-noroeste de Cabo San Lázaro, BCS."
+      "ubicacion": "A 100 km al oeste-noroeste de Cabo San Lázaro BCS."
     },
     {
       "dia_hora": "29/00h",
@@ -68,7 +68,7 @@
       "lon": "111.6",
       "viento": "140/170",
       "categoria": "Huracán categoría 1",
-      "ubicacion": "A 35 km al este de Mulegé, BCS."
+      "ubicacion": "A 35 km al este de Mulegé BCS."
     },
     {
       "dia_hora": "30/00h",
