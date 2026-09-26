@@ -3,80 +3,80 @@
   "fuente": "SMN / CONAGUA",
   "url_oficial": "https://smn.conagua.gob.mx/es/pronosticos/avisos/aviso-de-ciclon-tropical-en-el-oceano-pacifico",
   "url_datos": "https://smn.conagua.gob.mx/es/pronosticos/avisos/aviso-de-ciclon-tropical-en-el-oceano-pacifico",
-  "aviso": 49,
+  "aviso": 50,
   "fecha": "2026-09-26",
-  "hora_publicacion": "12:00",
-  "hora": "12:00",
-  "gmt": "18:00",
-  "lat": "18.3",
-  "lon": "111.2",
-  "referencia": "A 530 km al sur-suroeste de Cabo San Lucas, B.C.S., y a 730 km al sur de Cabo San Lázaro, B.C.S.",
-  "movimiento": "Hacia el oeste-noroeste (300°) a 15 km/h",
+  "hora_publicacion": "15:00",
+  "hora": "15:00",
+  "gmt": "21:00",
+  "lat": "18.7",
+  "lon": "112.5",
+  "referencia": "A 540 km al sur-suroeste de Cabo San Lucas, B.C.S., y a 680 km al sur de Cabo San Lázaro, B.C.S.",
+  "movimiento": "Hacia el noroeste (320°) a 17 km/h",
   "viento": 230,
   "racha": 280,
-  "presion": "936 hPa",
+  "presion": "938 hPa",
   "clasificacion": "Huracán categoría 4",
   "lluvia": "Su amplia circulación reforzará la probabilidad de intervalos de chubascos en Baja California Sur.",
   "vigilancia": "Se mantiene zona de vigilancia por efectos de vientos de huracán desde Punta Eugenia hasta Santa Fe, B.C.S.",
   "viento_costero": "Se prevén vientos de 20 a 30 km/h con rachas de 40 a 60 km/h en Baja California Sur, además de oleaje de 2.5 a 3.5 metros en las costas de Baja California Sur.",
   "oleaje": "Se prevén vientos de 20 a 30 km/h con rachas de 40 a 60 km/h en Baja California Sur, además de oleaje de 2.5 a 3.5 metros en las costas de Baja California Sur.",
-  "mapa": "https://smn.conagua.gob.mx/tools/GUI/PortalLaravel/public/WebImg/ImgTray1790446054.jpg",
+  "mapa": "https://smn.conagua.gob.mx/tools/GUI/PortalLaravel/public/WebImg/ImgTray1790456095.jpg",
   "pronostico": [
     {
-      "dia_hora": "26/18h",
-      "lat": "18.9",
-      "lon": "112.8",
-      "viento": "230/280",
-      "categoria": "Huracán categoría 4",
-      "ubicacion": "A 530 km al suroeste de Cabo San Lucas BCS."
-    },
-    {
-      "dia_hora": "27/06h",
-      "lat": "20.5",
-      "lon": "113.7",
+      "dia_hora": "27/00h",
+      "lat": "19.8",
+      "lon": "113.4",
       "viento": "215/260",
       "categoria": "Huracán categoría 4",
-      "ubicacion": "A 470 km al oeste-suroeste de Cabo San Lucas B.C.S."
+      "ubicacion": "A 495 km al suroeste de Cabo San Lucas, B.C.S."
     },
     {
-      "dia_hora": "27/18h",
-      "lat": "22.2",
+      "dia_hora": "27/12h",
+      "lat": "21.4",
       "lon": "114.0",
       "viento": "195/240",
       "categoria": "Huracán categoría 3",
-      "ubicacion": "A 425 km al oeste de Cabo San Lucas B.C.S."
+      "ubicacion": "A 415 km al sur-suroeste de Cabo San Lazaro, B.C.S."
     },
     {
-      "dia_hora": "28/06h",
-      "lat": "23.9",
-      "lon": "113.7",
+      "dia_hora": "28/00h",
+      "lat": "23.2",
+      "lon": "114.0",
       "viento": "175/215",
       "categoria": "Huracán categoría 2",
-      "ubicacion": "A 175 km al oeste-suroeste de Cabo San Lazaro B.C.S."
+      "ubicacion": "A 250 km al suroeste de Cabo San Lazaro, B.C.S."
     },
     {
-      "dia_hora": "28/18h",
-      "lat": "25.6",
-      "lon": "112.7",
+      "dia_hora": "28/12h",
+      "lat": "24.8",
+      "lon": "113.3",
       "viento": "160/195",
       "categoria": "Huracán categoría 2",
-      "ubicacion": "A 105 km al nor-noroeste de Cabo San Lazaro B.C.S."
+      "ubicacion": "A 105 km al oeste de Cabo San Lazaro, B.C.S."
     },
     {
-      "dia_hora": "29/06h",
-      "lat": "27.4",
-      "lon": "110.8",
-      "viento": "110/140",
+      "dia_hora": "29/00h",
+      "lat": "26.4",
+      "lon": "111.9",
+      "viento": "130/160",
+      "categoria": "Huracán categoría 1",
+      "ubicacion": "En tierra a 55 km al sur de Mulegé, B.C.S."
+    },
+    {
+      "dia_hora": "29/12h",
+      "lat": "28.0",
+      "lon": "110.2",
+      "viento": "95/110",
       "categoria": "Tormenta tropical",
-      "ubicacion": "A 130 km al este-noreste de Mulegé B.C.S."
+      "ubicacion": "En tierra a 70 km al este de Guaymas, Son."
     },
     {
-      "dia_hora": "30/06h",
-      "lat": "30.8",
-      "lon": "106.2",
-      "viento": "55/75",
-      "categoria": "Depresión tropical",
-      "ubicacion": "En tierra a 560 km al noreste de Guaymas B.C.S. y 240 km al norte de Chihuahua, Chih."
+      "dia_hora": "30/12h",
+      "lat": "31.2",
+      "lon": "105.7",
+      "viento": "40/55",
+      "categoria": "Post-tropical/Remanentes",
+      "ubicacion": "En tierra a 620 km al noreste de Guaymas, Son."
     }
   ]
 }
