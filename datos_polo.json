@@ -3,80 +3,72 @@
   "fuente": "SMN / CONAGUA",
   "url_oficial": "https://smn.conagua.gob.mx/es/pronosticos/avisos/aviso-de-ciclon-tropical-en-el-oceano-pacifico",
   "url_datos": "https://smn.conagua.gob.mx/es/pronosticos/avisos/aviso-de-ciclon-tropical-en-el-oceano-pacifico",
-  "aviso": 51,
-  "fecha": "2026-09-26",
-  "hora_publicacion": "18:00",
-  "hora": "18:00",
-  "gmt": "00:00",
-  "lat": "19.1",
-  "lon": "112.8",
-  "referencia": "A 520 km al suroeste de Cabo San Lucas, B.C.S., y a 635 km al sur de Cabo San Lázaro, B.C.S.",
-  "movimiento": "Hacia el noroeste (325°) a 17 km/h",
-  "viento": 220,
-  "racha": 270,
-  "presion": "940 hPa",
-  "clasificacion": "Huracán categoría 4",
-  "lluvia": "Su amplia circulación reforzará la probabilidad de intervalos de chubascos en Baja California Sur.",
-  "vigilancia": "Se mantiene zona de vigilancia por efectos de vientos de huracán desde Punta Eugenia hasta Santa Fe, B.C.S.",
+  "aviso": 53,
+  "fecha": "2026-09-27",
+  "hora_publicacion": "00:00",
+  "hora": "00:00",
+  "gmt": "06:00",
+  "lat": "19.8",
+  "lon": "113.4",
+  "referencia": "A 500 km al suroeste de Cabo San Lucas, B.C.S., y a 570 km al sur-suroeste de Cabo San Lázaro, B.C.S.",
+  "movimiento": "Hacia el noroeste (320°) a 17 km/h",
+  "viento": 195,
+  "racha": 230,
+  "presion": "950 hPa",
+  "clasificacion": "Huracán categoría 3",
+  "lluvia": "Su amplia circulación reforzará la probabilidad de intervalos de chubascos en Baja California Sur. (sur).",
+  "vigilancia": "Se mantiene zona de prevención por efectos de vientos de huracán desde Punta Abreojos hasta Santa Fe, B.C.S., zona de vigilancia por efectos de vientos de huracán y zona de prevención por efectos de vientos de tormenta tropical desde Punta Eugenia hasta Punta Abreojos, B.C.S., y zona de vigilancia por efectos de vientos de huracán desde Bahía San Juan Bautista hasta San Evaristo, B.C.S.",
   "viento_costero": "Se prevén vientos de 20 a 30 km/h con rachas de 40 a 60 km/h en Baja California Sur, además de oleaje de 2.5 a 3.5 metros en las costas de Baja California Sur.",
   "oleaje": "Se prevén vientos de 20 a 30 km/h con rachas de 40 a 60 km/h en Baja California Sur, además de oleaje de 2.5 a 3.5 metros en las costas de Baja California Sur.",
-  "mapa": "https://smn.conagua.gob.mx/tools/GUI/PortalLaravel/public/WebImg/ImgTray1790468597.jpg",
+  "mapa": "https://smn.conagua.gob.mx/tools/GUI/PortalLaravel/public/WebImg/ImgTray1790489338.jpg",
   "pronostico": [
     {
-      "dia_hora": "27/00h",
-      "lat": "19.8",
-      "lon": "113.4",
-      "viento": "215/260",
-      "categoria": "Huracán categoría 4",
-      "ubicacion": "A 495 km al suroeste de Cabo San Lucas, BCS; y a 530 km al sur-suroeste de Santa Fe, BCS."
-    },
-    {
-      "dia_hora": "27/12h",
-      "lat": "21.4",
-      "lon": "114.0",
-      "viento": "195/240",
+      "dia_hora": "27/06h",
+      "lat": "20.7",
+      "lon": "113.8",
+      "viento": "185/220",
       "categoria": "Huracán categoría 3",
-      "ubicacion": "A 415 km al sur-suroeste de Cabo San Lazaro, BCS; y a 420 km al suroeste de Santa Fe, BCS."
+      "ubicacion": "A 470 km al oeste-suroeste de Cabo San Lucas, BCS. y a 470 km al suroeste de Santa Fe, BCS."
     },
     {
-      "dia_hora": "28/00h",
-      "lat": "23.2",
-      "lon": "114.0",
+      "dia_hora": "27/18h",
+      "lat": "22.4",
+      "lon": "114.2",
       "viento": "175/215",
       "categoria": "Huracán categoría 2",
-      "ubicacion": "A 250 km al suroeste de Cabo San Lazaro, BCS; y a 310 km al oeste-suroeste de Santa Fe, BCS."
+      "ubicacion": "A 330 km al suroeste de Cabo San Lázaro, BCS., y a 365 km al oeste-suroeste de Santa Fe, BCS."
     },
     {
-      "dia_hora": "28/12h",
-      "lat": "24.8",
-      "lon": "113.3",
-      "viento": "160/195",
+      "dia_hora": "28/06h",
+      "lat": "24.2",
+      "lon": "113.7",
+      "viento": "170/205",
       "categoria": "Huracán categoría 2",
-      "ubicacion": "A 105 km al oeste de Cabo San Lazaro, BCS; y a 160 km al suroeste de Puerto San Andresito, BCS."
+      "ubicacion": "A 160 km al oeste-suroeste de Cabo San Lázaro, BCS. y a 240 km al suroeste de Puerto San Andresito, BCS."
     },
     {
-      "dia_hora": "29/00h",
-      "lat": "26.4",
-      "lon": "111.9",
-      "viento": "130/160",
+      "dia_hora": "28/18h",
+      "lat": "25.8",
+      "lon": "112.5",
+      "viento": "150/185",
       "categoria": "Huracán categoría 1",
-      "ubicacion": "En tierra sobre Baja California Sur, a 55 km al sur de Mulegé, BCS; y a 70 km al noroeste de Loreto, BCS."
+      "ubicacion": "A 40 km al oeste de Puerto San Andresito, BCS. y a 120 km al oeste-suroeste de Loreto, BCS."
     },
     {
-      "dia_hora": "29/12h",
-      "lat": "28.0",
-      "lon": "110.2",
-      "viento": "95/110",
-      "categoria": "Tormenta tropical",
-      "ubicacion": "En tierra sobre Sonora, y a 70 km al este de Guaymas, Son.; y a 160 km al nor-noroeste de Huatabampito, Son."
+      "dia_hora": "29/06h",
+      "lat": "27.6",
+      "lon": "110.8",
+      "viento": "120/150",
+      "categoria": "Huracán categoría 1",
+      "ubicacion": "A 35 km al sur-sureste de Guaymas, Son. y a 140 km al noreste de Mulegé, BCS."
     },
     {
-      "dia_hora": "30/12h",
-      "lat": "31.2",
-      "lon": "105.7",
-      "viento": "35/55",
-      "categoria": "Post-tropical / Remanentes",
-      "ubicacion": "En tierra entre los límites de Chihuahua y Texas, E.U.A., y a 85 km al sureste de Ciudad Juárez, Chih."
+      "dia_hora": "29/18h",
+      "lat": "29.7",
+      "lon": "108.4",
+      "viento": "55/75",
+      "categoria": "Post-Tropical/Remanentes",
+      "ubicacion": "En tierra sobre Chihuahua, a 315 km al noreste de Guaymas, Son. y a 360 km al nor-noreste de Huatabampito, Son."
     }
   ]
 }
