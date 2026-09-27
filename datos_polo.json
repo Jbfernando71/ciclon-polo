@@ -3,72 +3,64 @@
   "fuente": "SMN / CONAGUA",
   "url_oficial": "https://smn.conagua.gob.mx/es/pronosticos/avisos/aviso-de-ciclon-tropical-en-el-oceano-pacifico",
   "url_datos": "https://smn.conagua.gob.mx/es/pronosticos/avisos/aviso-de-ciclon-tropical-en-el-oceano-pacifico",
-  "aviso": 55,
+  "aviso": 57,
   "fecha": "2026-09-27",
-  "hora_publicacion": "06:00",
-  "hora": "06:00",
-  "gmt": "12:00",
-  "lat": "20.7",
-  "lon": "113.7",
-  "referencia": "A 460 km al oeste-suroeste de Cabo San Lucas, B.C.S., y a 480 km al sur-suroeste de Cabo San Lázaro, B.C.S.",
-  "movimiento": "Hacia el nor-noroeste (340°) a 17 km/h",
-  "viento": 195,
-  "racha": 240,
-  "presion": "952 hPa",
+  "hora_publicacion": "12:00",
+  "hora": "12:00",
+  "gmt": "18:00",
+  "lat": "21.3",
+  "lon": "114.0",
+  "referencia": "A 425 km al sur-suroeste de Cabo San Lázaro, B.C.S., y a 460 km al oeste-suroeste de Cabo San Lucas, B.C.S.",
+  "movimiento": "Hacia el norte-noroeste (345°) a 19 km/h",
+  "viento": 205,
+  "racha": 250,
+  "presion": "950 hPa",
   "clasificacion": "Huracán categoría 3",
-  "lluvia": "Su amplia circulación reforzará la probabilidad de lluvias puntuales fuertes (25 a 50 mm) en Baja California Sur (norte, centro y sur).",
-  "vigilancia": "Se mantiene zona de prevención por efectos de vientos de huracán desde Punta Abreojos hasta Santa Fe, B.C.S., zona de prevención por efectos de vientos de huracán desde Loreto hasta Santa Rosalía, B.C.S. Zona de vigilancia por efectos de vientos de huracán y de prevención por efectos de vientos de tormenta tropical desde Punta Abreojos hasta Punta Eugenia. B.C.S. Zona de vigilancia por efectos de vientos de huracán y de prevención por efectos de vientos de tormenta tropical desde Loreto hasta San Evaristo, B.C.S. Zona de vigilancia por efectos de vientos de huracán y de prevención por efectos de vientos de tormenta tropical desde Santa Rosalía hasta San Juan Bautista. B.C.S. Zona de vigilancia por efectos de vientos de huracán desde Huatabampito hasta Bahía Quino, Son. Zona de vigilancia por efectos de vientos de tormenta tropical desde Huatabampito, Son. hasta Topolobampo Sin.",
+  "lluvia": "Su amplia circulación reforzará la probabilidad de lluvias puntuales fuertes (25 a 50 mm) en Baja California Sur (norte y centro).",
+  "vigilancia": "Se mantiene zona de prevención por efectos de vientos de huracán desde Punta Abreojos hasta Santa Fe, B.C.S., y desde Loreto hasta Santa Rosalía, B.C.S.; zona de vigilancia por efectos de vientos de huracán y de prevención por efectos de vientos de tormenta tropical desde Punta Abreojos hasta Punta Eugenia. B.C.S., desde Loreto hasta San Evaristo, B.C.S., y desde Santa Rosalía hasta San Juan Bautista. B.C.S., zona de vigilancia por efectos de vientos de huracán desde Huatabampito hasta Bahía Quino, Son., y zona de vigilancia por efectos de vientos de tormenta tropical desde Huatabampito, Son. hasta Topolobampo Sin.",
   "viento_costero": "Se prevén vientos de 20 a 40 km/h con rachas de 50 a 60 km/h en Baja California Sur, además de oleaje de 3.0 a 5.0 metros de altura en las costas de Baja California Sur.",
   "oleaje": "Se prevén vientos de 20 a 40 km/h con rachas de 50 a 60 km/h en Baja California Sur, además de oleaje de 3.0 a 5.0 metros de altura en las costas de Baja California Sur.",
-  "mapa": "https://smn.conagua.gob.mx/tools/GUI/PortalLaravel/public/WebImg/ImgTray1790511439.jpg",
+  "mapa": "https://smn.conagua.gob.mx/tools/GUI/PortalLaravel/public/WebImg/ImgTray1790532243.jpg",
   "pronostico": [
     {
-      "dia_hora": "27/12h",
-      "lat": "21.6",
-      "lon": "114.0",
-      "viento": "185/220",
+      "dia_hora": "27/18h",
+      "lat": "22.7",
+      "lon": "113.9",
+      "viento": "205/250",
       "categoria": "Huracán categoría 3",
-      "ubicacion": "A 395 km al sur-suroeste de Cabo San Lázaro, BCS. y a 405 km al suroeste de Santa Fe, BCS."
+      "ubicacion": "A 285 km al suroeste de Cabo San Lázaro B.C.S.; y a 325 km al oeste-suroeste de Santa Fe B.C.S."
     },
     {
-      "dia_hora": "28/00h",
-      "lat": "23.4",
-      "lon": "114.0",
+      "dia_hora": "28/06h",
+      "lat": "24.5",
+      "lon": "113.4",
+      "viento": "195/240",
+      "categoria": "Huracán categoría 3",
+      "ubicacion": "A 120 km al oeste-suroeste de Cabo San Lázaro B.C.S.; y a 190 km al suroeste de Puerto San Andresito B.C.S."
+    },
+    {
+      "dia_hora": "28/18h",
+      "lat": "26.3",
+      "lon": "112.2",
       "viento": "175/215",
       "categoria": "Huracán categoría 2",
-      "ubicacion": "A 230 km al suroeste de Cabo San Lázaro, BCS. a 300 km al oeste-suroeste de Santa Fe, BCS."
+      "ubicacion": "En tierra sobre Baja California Sur a60 km al norte de Puerto San Andresito B.C.S.; y a 70 km al sur-suroeste de Mulegé B.C.S."
     },
     {
-      "dia_hora": "28/12h",
-      "lat": "25.1",
-      "lon": "113.1",
-      "viento": "170/205",
-      "categoria": "Huracán categoría 2",
-      "ubicacion": "A 95 km al oeste-noroeste de Cabo San Lázaro, BCS. y a 125 km al suroeste de Puerto San Andresito, BCS."
-    },
-    {
-      "dia_hora": "29/00h",
-      "lat": "26.8",
-      "lon": "111.6",
-      "viento": "130/160",
-      "categoria": "Huracán categoría 1",
-      "ubicacion": "A 40 km al este-sureste de Mulegé, BCS. y a 90 km al sureste de Santa Rosalía, BCS."
-    },
-    {
-      "dia_hora": "29/12h",
-      "lat": "28.9",
-      "lon": "109.3",
-      "viento": "75/95",
+      "dia_hora": "29/06h",
+      "lat": "28.6",
+      "lon": "110.0",
+      "viento": "100/120",
       "categoria": "Tormenta tropical",
-      "ubicacion": "En tierra a 190 km al noreste de Guaymas, Son. y a 250 km al norte de Huatabampito, Son."
+      "ubicacion": "En tierra sobre Sonora a 115 km al noreste de Guaymas Son.; y a 190 km al este de Bahía Kino Son."
     },
     {
-      "dia_hora": "30/00h",
-      "lat": "31.3",
-      "lon": "106.8",
-      "viento": "45/65",
-      "categoria": "Post-Tropical/Remanentes",
-      "ubicacion": "En tierra a 545 km al noreste de Guaymas, Son. y a 570 km al este-noreste de Bahía Kino, Son."
+      "dia_hora": "29/18h",
+      "lat": "31.5",
+      "lon": "107.2",
+      "viento": "55/75",
+      "categoria": "Post-tropical / Remanentes",
+      "ubicacion": "En tierra sobre Chihuahua a 75 km al oeste-suroeste de Ciudad Juárez Chih.; y a 535 km al noreste de Guaymas Son."
     }
   ]
 }
