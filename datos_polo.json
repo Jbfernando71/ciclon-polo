@@ -3,14 +3,14 @@
   "fuente": "SMN / CONAGUA",
   "url_oficial": "https://smn.conagua.gob.mx/es/pronosticos/avisos/aviso-de-ciclon-tropical-en-el-oceano-pacifico",
   "url_datos": "https://smn.conagua.gob.mx/es/pronosticos/avisos/aviso-de-ciclon-tropical-en-el-oceano-pacifico",
-  "aviso": 64,
+  "aviso": 65,
   "fecha": "2026-09-28",
-  "hora_publicacion": "09:00",
-  "hora": "09:00",
-  "gmt": "15:00",
-  "lat": "24.2",
+  "hora_publicacion": "12:00",
+  "hora": "12:00",
+  "gmt": "18:00",
+  "lat": "24.5",
   "lon": "113.5",
-  "referencia": "A 140 km al oeste-suroeste de Cabo San Lázaro, B.C.S., y a 365 km al sur-suroeste de Santa Rosalía, B.C.S.",
+  "referencia": "A 125 km al oeste-suroeste de Cabo San Lázaro, B.C.S., y a 335 km al sur-suroeste de Santa Rosalía, B.C.S.",
   "movimiento": "Hacia el noreste (35°) a 17 km/h.",
   "viento": 185,
   "racha": 220,
@@ -20,7 +20,7 @@
   "vigilancia": "Se mantiene zona de prevención por efectos de vientos de huracán desde Punta Abreojos hasta Santa Fe, B.C.S., desde Loreto hasta San Juan Bautista, B.C.S., y desde Bahía Kino, Son., hasta Huatabampito, Son.; zona de vigilancia por efectos de vientos de huracán y de prevención por efectos de vientos de tormenta tropical desde Punta Abreojos hasta Punta Eugenia. B.C.S., desde Loreto hasta San Evaristo, B.C.S., y desde Huatabampito, Son., hasta Topolobampo, Sin.",
   "viento_costero": "Se prevén vientos de 170 a 190 km/h con rachas de 220 a 240 km/h en Baja California Sur, además de oleaje de 8.0 a 10.0 metros de altura en las costas de dicha entidad, vientos de 40 a 60 km/h con rachas de 70 a 90 km/h en Sonora (costa y sur). Olas de 2.0 a 4.0 metros en costas del sur de Sonora, olas de 1.0 a 2.0 metros en costas de Baja California (sur) y Sinaloa, así como marea de tormenta con olas de 1.5 a 2.5 metros en costas de Baja California Sur (centro).",
   "oleaje": "Se prevén vientos de 170 a 190 km/h con rachas de 220 a 240 km/h en Baja California Sur, además de oleaje de 8.0 a 10.0 metros de altura en las costas de dicha entidad, vientos de 40 a 60 km/h con rachas de 70 a 90 km/h en Sonora (costa y sur). Olas de 2.0 a 4.0 metros en costas del sur de Sonora, olas de 1.0 a 2.0 metros en costas de Baja California (sur) y Sinaloa, así como marea de tormenta con olas de 1.5 a 2.5 metros en costas de Baja California Sur (centro).",
-  "mapa": "https://smn.conagua.gob.mx/tools/GUI/PortalLaravel/public/WebImg/ImgTray1790608690.jpg",
+  "mapa": "https://smn.conagua.gob.mx/tools/GUI/PortalLaravel/public/WebImg/ImgTray1790619297.jpg",
   "pronostico": [
     {
       "dia_hora": "28/18h",
@@ -28,7 +28,7 @@
       "lon": "112.7",
       "viento": "185/220",
       "categoria": "Huracán categoría 3",
-      "ubicacion": "A 70 km al suroeste de Puerto San Andresito, BCS."
+      "ubicacion": "A 70 km al suroeste de Puerto San Andresito BCS."
     },
     {
       "dia_hora": "29/06h",
@@ -36,7 +36,7 @@
       "lon": "111.0",
       "viento": "130/160",
       "categoria": "Huracán categoría 1",
-      "ubicacion": "A 60 km al sur-suroeste de Guaymas, Son."
+      "ubicacion": "A 60 km al sur-suroeste de Guaymas Son."
     },
     {
       "dia_hora": "29/18h",
@@ -44,7 +44,7 @@
       "lon": "108.8",
       "viento": "55/75",
       "categoria": "Post-tropical/Remanentes",
-      "ubicacion": "En tierra, a 105 km al suroeste de Nuevo Casas Grandes, Chih."
+      "ubicacion": "En tierra, a 85 km al oeste-suroeste de Nuevo Casas Grandes, Chih."
     }
   ]
 }
