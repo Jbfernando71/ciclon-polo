@@ -3,24 +3,24 @@
   "fuente": "SMN / CONAGUA",
   "url_oficial": "https://smn.conagua.gob.mx/es/pronosticos/avisos/aviso-de-ciclon-tropical-en-el-oceano-pacifico",
   "url_datos": "https://smn.conagua.gob.mx/es/pronosticos/avisos/aviso-de-ciclon-tropical-en-el-oceano-pacifico",
-  "aviso": 72,
+  "aviso": 73,
   "fecha": "2026-09-29",
-  "hora_publicacion": "09:00",
-  "hora": "09:00",
-  "gmt": "15:00",
-  "lat": "27.8",
-  "lon": "110.9",
-  "referencia": "A 20 km al sur de Guaymas, Son., y a 205 km al nor-noreste de Loreto, B.C.S.",
+  "hora_publicacion": "12:00",
+  "hora": "12:00",
+  "gmt": "18:00",
+  "lat": "28.0",
+  "lon": "110.6",
+  "referencia": "A 30 km al este de Guaymas, Son., y a 235 km al nor-noreste de Loreto, B.C.S.",
   "movimiento": "Hacia el noreste (40°) a 28 km/h.",
   "viento": 120,
   "racha": 150,
-  "presion": "981 hPa",
+  "presion": "984 hPa",
   "clasificacion": "Huracán categoría 1",
   "lluvia": "Su amplia circulación reforzará la probabilidad de lluvias puntuales torrenciales (150 a 250 mm) en Sonora (centro, sur y costa); lluvias intensas (75 a 150 mm) en Sinaloa (norte); lluvias muy fuertes (50 a 75 mm) en Baja California Sur (centro) y Chihuahua (oeste y norte) y lluvias fuertes (25 a 50 mm) en Baja California (sur).",
-  "vigilancia": "Se mantiene zona de prevención por efectos de vientos de huracán desde Bahía Kino, Son., hasta Huatabampito, Son.; zona de vigilancia por efectos de vientos de huracán desde Huatabampito, Son., hasta Topolobampo, Sin.; zona de vigilancia por efectos de vientos de tormenta tropical desde Loreto, B.C.S., hasta Santa Rosalía, B.C.S., y desde Huatabampito, Son., hasta Topolobampo, Sin. Se descontinúan la zona de prevención por efectos de vientos de huracán en la costa occidental de Baja California Sur.",
-  "viento_costero": "Se prevén vientos de 90 a 110 km/h con rachas de 130 a 150 km/h en el golfo de California y Sonora (costa y sur), disminuyendo durante el día. Vientos de 40 a 50 km/h con rachas de 60 a 70 km/h en Sinaloa (norte). Además de oleaje de 4.0 a 5.0 metros de altura en el golfo de California y Sonora (sur y centro), así como oleaje de 1.5 a 2.5 metros de altura en Sinaloa (norte).",
-  "oleaje": "Se prevén vientos de 90 a 110 km/h con rachas de 130 a 150 km/h en el golfo de California y Sonora (costa y sur), disminuyendo durante el día. Vientos de 40 a 50 km/h con rachas de 60 a 70 km/h en Sinaloa (norte). Además de oleaje de 4.0 a 5.0 metros de altura en el golfo de California y Sonora (sur y centro), así como oleaje de 1.5 a 2.5 metros de altura en Sinaloa (norte).",
-  "mapa": "https://smn.conagua.gob.mx/tools/GUI/PortalLaravel/public/WebImg/ImgTray1790695090.jpg",
+  "vigilancia": "Se mantiene zona de prevención por efectos de vientos de huracán desde Bahía Kino, Son., hasta Huatabampito, Son., así como zona de prevención por efectos de vientos de tormenta tropical y zona de vigilancia por efectos de vientos de huracán desde Huatabampito, Son., hasta Topolobampo, Sin. Se descontinúan las zonas de prevención y vigilancia por efectos de vientos de huracán en Baja California Sur.",
+  "viento_costero": "Se prevén vientos de 90 a 110 km/h con rachas de 130 a 150 km/h en el golfo de California y Sonora (costa y sur), disminuyendo durante el día. Vientos de 40 a 50 km/h con rachas de 60 a 70 km/h en Sinaloa (norte). Además de oleaje de 4.0 a 5.0 metros de altura en el golfo de California y Sonora (sur y costa), así como oleaje de 1.5 a 2.5 metros de altura en Sinaloa (norte).",
+  "oleaje": "Se prevén vientos de 90 a 110 km/h con rachas de 130 a 150 km/h en el golfo de California y Sonora (costa y sur), disminuyendo durante el día. Vientos de 40 a 50 km/h con rachas de 60 a 70 km/h en Sinaloa (norte). Además de oleaje de 4.0 a 5.0 metros de altura en el golfo de California y Sonora (sur y costa), así como oleaje de 1.5 a 2.5 metros de altura en Sinaloa (norte).",
+  "mapa": "https://smn.conagua.gob.mx/tools/GUI/PortalLaravel/public/WebImg/ImgTray1790707836.jpg",
   "pronostico": [
     {
       "dia_hora": "29/18h",
@@ -28,7 +28,7 @@
       "lon": "108.2",
       "viento": "75/95",
       "categoria": "Post-tropical/Remanentes",
-      "ubicacion": "En tierra, a 30 km al oeste-noroeste de Nuevo Casas Grandes, Chih."
+      "ubicacion": "En tierra a 30 km al oeste-noroeste de Nuevo Casas Grandes Chih."
     }
   ]
 }
